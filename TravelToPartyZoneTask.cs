@@ -49,8 +49,33 @@ namespace FollowBot
             if (leader == null) return false;
             if (LokiPoe.InGameState.PartyHud.IsInSameZone(leader.PlayerEntry.Name)) return false;
 
-            
 
+            //First check for Delve portals:
+            var delveportal = LokiPoe.ObjectManager.GetObjectsByType<AreaTransition>().FirstOrDefault(x => x.Name == "Azurite Mine" && x.Metadata == "Metadata/MiscellaneousObject/PortalTransition");
+            if (delveportal != null)
+            {
+                Log.DebugFormat("[{0}] Found walkable delve portal.", Name);
+                if (LokiPoe.Me.Position.Distance(delveportal.Position) > 20)
+                {
+                    var walkablePosition = ExilePather.FastWalkablePositionFor(delveportal, 20);
+
+                    // Cast Phase run if we have it.
+                    FollowBot.PhaseRun();
+
+                    Move.Towards(walkablePosition, "moving to delve portal");
+                    return true;
+                }
+
+                var tele = await Coroutines.InteractWith(delveportal);
+
+                if (!tele)
+                {
+                    Log.DebugFormat("[{0}] delve portal error.", Name);
+                }
+
+                FollowBot.Leader = null;
+                return true;
+            }
             if (leader.PlayerEntry.Area.IsMap || leader.PlayerEntry.Area.IsTempleOfAtzoatl)
             {
                 await TakePortal();
@@ -90,6 +115,35 @@ namespace FollowBot
 
                     await PlayerAction.Interact(trans);
                     return true;
+                }
+                else if (World.CurrentArea.IsLabyrinthArea)
+                {
+                    AreaTransition areatransition = null;
+                    areatransition = LokiPoe.ObjectManager.GetObjectsByType<AreaTransition>().OrderBy(x => x.Distance).FirstOrDefault(x => ExilePather.PathExistsBetween(LokiPoe.Me.Position, ExilePather.FastWalkablePositionFor(x.Position, 20)));
+                    if (areatransition != null)
+                    {
+                        Log.DebugFormat("[{0}] Found walkable Area Transition [{1}].", Name, areatransition.Name);
+                        if (LokiPoe.Me.Position.Distance(areatransition.Position) > 20)
+                        {
+                            var walkablePosition = ExilePather.FastWalkablePositionFor(areatransition, 20);
+
+                            // Cast Phase run if we have it.
+                            FollowBot.PhaseRun();
+
+                            Move.Towards(walkablePosition, "moving to area transition");
+                            return true;
+                        }
+
+                        var trans = await PlayerAction.TakeTransition(areatransition);
+
+                        if (!trans)
+                        {
+                            Log.DebugFormat("[{0}] Areatransition error.", Name);
+                        }
+
+                        FollowBot.Leader = null;
+                        return true;
+                    }
                 }
                 GlobalLog.Warn($"[TravelToPartyZoneTask] Cant follow the leader in the Labirynt when the lab is already started.");
                 return false;

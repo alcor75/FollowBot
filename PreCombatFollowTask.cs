@@ -57,6 +57,7 @@ namespace FollowBot
                         FollowBotSettings.Instance.MaxFollowDistance)));
                 if (pos == Vector2i.Zero || !ExilePather.PathExistsBetween(LokiPoe.Me.Position, pos))
                 {
+
                     return false;
                 }
 
