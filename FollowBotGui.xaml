@@ -1,0 +1,188 @@
+﻿<UserControl x:Class="FollowBot.FollowBotGui"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:settingsPath="clr-namespace:FollowBot"
+             mc:Ignorable="d" 
+             d:DesignHeight="Auto" d:DesignWidth="Auto">
+    <Grid DataContext="{x:Static settingsPath:FollowBotSettings.Instance}">
+        <TabControl>
+            <TabItem Header="General" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <WrapPanel Margin="0,5,0,0">
+                            <Label Content="Invite Whitelist:"/>
+                            <TextBox Text="{Binding Path=InviteWhiteList, Mode=TwoWay}" MinWidth="100" MaxWidth="200" ToolTip="If the list is empty,the bot will accept any invite, otherwise he will accept invite only from the name in the list."/>
+                        </WrapPanel>
+                        <WrapPanel Margin="0,5,0,0">
+                            <Label Content="Follow Distance:"/>
+                            <Label Content="min"/>
+                            <TextBox Text="{Binding Path=FollowDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50"/>
+                            <Label Content="max"/>
+                            <TextBox Text="{Binding Path=MaxFollowDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50"/>
+                        </WrapPanel>
+
+                        <Label Content="Party role:   "></Label>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <CheckBox Grid.Row="0" Grid.Column="0" Content="Kill Monsters" Margin="10,0,10,0" IsChecked="{Binding Path=ShouldKill, Mode=TwoWay}" VerticalAlignment="Center"/>
+                            <Label Grid.Row="0" Grid.Column="1" Content="Max combat Distance:" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Path=MaxCombatDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" VerticalAlignment="Center"/>
+
+                            <CheckBox Grid.Row="1" Grid.Column="0" Content="Loot Visible Items" Margin="10,0,10,0" IsChecked="{Binding Path=ShouldLoot, Mode=TwoWay}" VerticalAlignment="Center"/>
+                            <Label Grid.Row="1" Grid.Column="1" Content="Max loot Distance:" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Path=MaxLootDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" VerticalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Flasks" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <DataGrid CanUserSortColumns="False" ItemsSource="{Binding Path=Flasks}" AutoGenerateColumns="False" AllowDrop="False" CanUserAddRows="False" VerticalAlignment="Top" Margin="0,5,0,0">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Enabled">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <CheckBox HorizontalAlignment="Center" IsChecked="{Binding Path=Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Enabled ?" Width="Auto"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <!--<DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Path=Enabled}" Width="Auto"></DataGridCheckBoxColumn>-->
+                        <DataGridTemplateColumn Header="Slot" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Label Content="{Binding Path=Slot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="UseEs">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <CheckBox HorizontalAlignment="Center" IsChecked="{Binding Path=UseEs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Use energy shield as threshold instead of life" Width="Auto"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <!--<DataGridCheckBoxColumn Header="UseEs" Binding="{Binding Path=UseEs}" Width="Auto"></DataGridCheckBoxColumn>-->
+                        <DataGridTemplateColumn Header="UseMana">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <CheckBox HorizontalAlignment="Center" IsChecked="{Binding Path=UseMana, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Use mana as threshold instead of life" Width="Auto"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <!--<DataGridCheckBoxColumn Header="UseMana" Binding="{Binding Path=UseMana}" Width="Auto"></DataGridCheckBoxColumn>-->
+                        <DataGridTemplateColumn Header="Threshold" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <WrapPanel>
+                                        <Slider Name="SlThreshold" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=Threshold, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="101" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="This skill will be triggered when the selected property (Life, Es, Mana) is under this percent. set to 101 to always trigger."/>
+                                        <TextBox Name="TbThreshold" Text="{Binding ElementName=SlThreshold, Path=Value}" Width="40"  HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
+                                    </WrapPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Defensive Skills" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+                    <DataGrid CanUserSortColumns="False" ItemsSource="{Binding Path=DefensiveSkills}" AutoGenerateColumns="False" AllowDrop="False" VerticalAlignment="Top" Margin="0,5,0,0">
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Path=Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" ></DataGridCheckBoxColumn>
+                            <DataGridTextColumn Header="Skill Name" Binding="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto"></DataGridTextColumn>
+                            <DataGridCheckBoxColumn Header="UseEs" Binding="{Binding Path=UseEs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" ></DataGridCheckBoxColumn>
+
+                            <DataGridTemplateColumn Header="Threshold">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <WrapPanel>
+                                            <Slider Name="SlThreshold" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=Threshold, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="101" AutoToolTipPrecision="1" VerticalAlignment="Center"/>
+                                            <TextBox Name="TbThreshold" Text="{Binding ElementName=SlThreshold, Path=Value}" Width="40" HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
+                                        </WrapPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="SleepOnUse">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <WrapPanel>
+                                            <Slider Name="SlSleep" Minimum="0" Margin="0,5,0,0" Width="100" Value="{Binding Path=SleepSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="60" AutoToolTipPrecision="1" VerticalAlignment="Center"/>
+                                            <TextBox Name="TbSleep" Text="{Binding ElementName=SlSleep, Path=Value}" Width="40" HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
+                                        </WrapPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridCheckBoxColumn Header="CastOnLeader" Binding="{Binding Path=CastOnLeader, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto"></DataGridCheckBoxColumn>
+                            
+                            <DataGridTemplateColumn Header="Remove">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Click="RemoveDefensiveSkillRule" VerticalAlignment="Center">X</Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Level Gems" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <StackPanel VerticalAlignment="Top" Margin="0,5,0,0">
+                    <CheckBox Name="DebugStatementsCheckBox"
+                              IsChecked="{Binding Path=GemDebugStatements, Mode=TwoWay}"
+                              ToolTip="If enabled, it will log some debug informations"
+                              Content="Gem Debug Info."></CheckBox>
+                    <CheckBox Name ="LevelOffhandOnly"
+                              IsChecked="{Binding Path=LevelOffhandOnly, Mode=TwoWay}"
+                              ToolTipService.ToolTip="If selected, only skill gem equiped in secondary weapons slot will be leveled. Gems in the ignore list are still ignored."
+                              Content="Level Offhand (all) gems ONLY" Grid.Row="1" Grid.Column="0"></CheckBox>
+                    <CheckBox Name ="LevelAllGems" 
+                              IsChecked="{Binding Path=LevelAllGems, Mode=TwoWay}"
+                              ToolTipService.ToolTip="If selected, all skill gem equiped but the one in the ignore list will be leveled."
+                              Content="Level (all) gems" Grid.Row="2" Grid.Column="0"></CheckBox>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0" Content="Gem to Ignore: " Margin="3"  ToolTipService.ToolTip="The skillgem name to add/remove from the ignore list."/>
+                        <TextBox x:Name="GlobalNameIgnoreTextBox" Grid.Row="0" Grid.Column="1" Width="160"/>
+                        <Button x:Name="AddGlobalNameIgnoreButton" Grid.Row="0" Grid.Column="2" Content="Add" Margin="3,5,3,1" ToolTipService.ToolTip="Adds the skillgem name to the ignore list. NOTE: you can stop leveling a gem to a specific level separating the name and the target level with a coma Ex. Added Chaos Damage Support,5 " Click="AddGlobalNameIgnoreButton_OnClick"/>
+                        <Button x:Name="RemoveGlobalNameIgnoreButton" Grid.Row="0" Grid.Column="3" Content="Remove" Margin="3,5,3,1" ToolTipService.ToolTip="Removes the skillgem name to the ignore list. Note to fast remove a gem, click on it in the list and the name will appear here." Click="RemoveGlobalNameIgnoreButton_OnClick"/>
+
+                        <Label Grid.Row="1" Grid.Column="0" Content="Gem to Ignore List: " Margin="3"  ToolTipService.ToolTip="A list of skillgem names to ignore from leveling."/>
+                        <ListBox x:Name="GlobalNameIgnoreListListBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding Path=GlobalNameIgnoreList, Mode=TwoWay}" SelectionChanged="GlobalNameIgnoreListListBox_SelectionChanged" />
+                    </Grid>
+
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

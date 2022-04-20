@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DA7C54AF-07B1-423C-B05C-7FBE0FF34181}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FollowBot</RootNamespace>
+    <AssemblyName>FollowBot</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DreamPoeBot">
+      <HintPath>..\..\..\..\..\..\..\obama\DreamPoeBot.exe</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\..\..\..\..\obama\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro">
+      <HintPath>..\..\..\..\..\..\..\obama\MahApps.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\obama\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Class\DefensiveSkillsClass.cs" />
+    <Compile Include="Class\Flasks.cs" />
+    <Compile Include="Class\FlasksClass.cs" />
+    <Compile Include="DefenseAndFlaskTask.cs" />
+    <Compile Include="FollowBot.cs" />
+    <Compile Include="LevelGemsTask.cs" />
+    <Compile Include="OpenWaypointTask.cs" />
+    <Compile Include="PreCombatFollowTask.cs" />
+    <Compile Include="SimpleEXtensions\CommonTasks\CastAuraTask.cs" />
+    <Compile Include="FollowTask.cs" />
+    <Compile Include="Helpers\PartyHelper.cs" />
+    <Compile Include="Helpers\TravelHelper.cs" />
+    <Compile Include="FollowBotGui.xaml.cs">
+      <DependentUpon>FollowBotGui.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="JoinPartyTask.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FollowBotSettings.cs" />
+    <Compile Include="SimpleEXtensions\AreaInfo.cs" />
+    <Compile Include="SimpleEXtensions\BotStructure.cs" />
+    <Compile Include="SimpleEXtensions\CachedObjects\CachedObject.cs" />
+    <Compile Include="SimpleEXtensions\CachedObjects\CachedItem.cs" />
+    <Compile Include="SimpleEXtensions\CachedObjects\CachedStrongbox.cs" />
+    <Compile Include="SimpleEXtensions\CachedObjects\CachedTransition.cs" />
+    <Compile Include="SimpleEXtensions\CachedObjects\CachedWorldItem.cs" />
+    <Compile Include="SimpleEXtensions\ClassExtensions.cs" />
+    <Compile Include="SimpleEXtensions\CommonTasks\ClearCursorTask.cs" />
+    <Compile Include="SimpleEXtensions\CommonTasks\CombatTask.cs" />
+    <Compile Include="SimpleEXtensions\CommonTasks\FallbackTask.cs" />
+    <Compile Include="SimpleEXtensions\CommonTasks\LootItemTask.cs" />
+    <Compile Include="SimpleEXtensions\CommonTasks\PostCombatHookTask.cs" />
+    <Compile Include="SimpleEXtensions\CurrencyNames.cs" />
+    <Compile Include="SimpleEXtensions\Enums.cs" />
+    <Compile Include="SimpleEXtensions\ErrorManager.cs" />
+    <Compile Include="SimpleEXtensions\EventArgs.cs" />
+    <Compile Include="SimpleEXtensions\Events.cs" />
+    <Compile Include="SimpleEXtensions\GlobalLog.cs" />
+    <Compile Include="SimpleEXtensions\Global\CombatAreaCache.cs" />
+    <Compile Include="SimpleEXtensions\Global\ComplexExplorer.cs" />
+    <Compile Include="SimpleEXtensions\Global\ResurrectionLogic.cs" />
+    <Compile Include="SimpleEXtensions\Global\TrackMobLogic.cs" />
+    <Compile Include="SimpleEXtensions\Global\Travel.cs" />
+    <Compile Include="SimpleEXtensions\Interval.cs" />
+    <Compile Include="SimpleEXtensions\Inventories.cs" />
+    <Compile Include="SimpleEXtensions\ITaskManagerHolder.cs" />
+    <Compile Include="SimpleEXtensions\MapNames.cs" />
+    <Compile Include="SimpleEXtensions\Move.cs" />
+    <Compile Include="SimpleEXtensions\PlayerAction.cs" />
+    <Compile Include="SimpleEXtensions\Positions\Position.cs" />
+    <Compile Include="SimpleEXtensions\Positions\StaticPositions.cs" />
+    <Compile Include="SimpleEXtensions\Positions\TgtPosition.cs" />
+    <Compile Include="SimpleEXtensions\Positions\WalkablePosition.cs" />
+    <Compile Include="SimpleEXtensions\Positions\WorldPosition.cs" />
+    <Compile Include="SimpleEXtensions\Tgt.cs" />
+    <Compile Include="SimpleEXtensions\Wait.cs" />
+    <Compile Include="SimpleEXtensions\World.cs" />
+    <Compile Include="TravelToPartyZoneTask.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="FollowBotGui.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
