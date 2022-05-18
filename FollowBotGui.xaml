@@ -30,6 +30,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <Grid.ColumnDefinitions>
@@ -45,6 +46,7 @@
                             <CheckBox Grid.Row="1" Grid.Column="0" Content="Loot Visible Items" Margin="10,0,10,0" IsChecked="{Binding Path=ShouldLoot, Mode=TwoWay}" VerticalAlignment="Center"/>
                             <Label Grid.Row="1" Grid.Column="1" Content="Max loot Distance:" VerticalAlignment="Center"/>
                             <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Path=MaxLootDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="2" Grid.Column="0" Content="Use Stalker Sentinel" Margin="10,0,10,0" IsChecked="{Binding Path=UseStalkerSentinel, Mode=TwoWay}" VerticalAlignment="Center"/>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
@@ -93,8 +95,18 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <WrapPanel>
-                                        <Slider Name="SlThreshold" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=Threshold, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="101" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="This skill will be triggered when the selected property (Life, Es, Mana) is under this percent. set to 101 to always trigger."/>
+                                        <Slider Name="SlThreshold" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=Threshold, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="101" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="This flask will be triggered when the selected property (Life, Es, Mana) is under this percent. set to 101 to always trigger."/>
                                         <TextBox Name="TbThreshold" Text="{Binding ElementName=SlThreshold, Path=Value}" Width="40"  HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
+                                    </WrapPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Cooldown (Ms)" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <WrapPanel>
+                                        <Slider Name="SlCooldown" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=Cooldown, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="10000" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="Cooldown time for this flask. The flask will be used once every x milliseconds as per delay configuration."/>
+                                        <TextBox Name="TbCooldown" Text="{Binding ElementName=SlCooldown, Path=Value}" MinWidth="40"  HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
                                     </WrapPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -121,11 +133,11 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="SleepOnUse">
+                            <DataGridTemplateColumn Header="SleepOnUse (Sec)">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <WrapPanel>
-                                            <Slider Name="SlSleep" Minimum="0" Margin="0,5,0,0" Width="100" Value="{Binding Path=SleepSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="60" AutoToolTipPrecision="1" VerticalAlignment="Center"/>
+                                            <Slider Name="SlSleep" Minimum="0" Margin="0,5,0,0" Width="100" Value="{Binding Path=SleepSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="0.1" IsSnapToTickEnabled="True" SmallChange="0.1" LargeChange="1" Maximum="60" AutoToolTipPrecision="1" VerticalAlignment="Center"/>
                                             <TextBox Name="TbSleep" Text="{Binding ElementName=SlSleep, Path=Value}" Width="40" HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
                                         </WrapPanel>
                                     </DataTemplate>

@@ -205,6 +205,7 @@ namespace FollowBot.SimpleEXtensions
 
         public static class Act11
         {
+            public static readonly AreaInfo KaruiShores = new AreaInfo("2_11_endgame_town", "Karui Shores");
             public static readonly AreaInfo Oriath = new AreaInfo("2_11_town", "Oriath");
             public static readonly AreaInfo TemplarLaboratory = new AreaInfo("2_11_lab", "The Templar Laboratory");
             public static readonly AreaInfo FallenCourts = new AreaInfo("2_11_1", "The Fallen Courts");

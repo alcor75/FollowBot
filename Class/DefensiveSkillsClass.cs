@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -12,7 +13,7 @@ namespace FollowBot.Class
         private bool _enabled { get; set; }
         private bool _useEs { get; set; }
         private int _threshold { get; set; }
-        private int _sleepSeconds { get; set; }
+        private double _sleepSeconds { get; set; }
         private bool _castOnLeader { get; set; }
 
         public DefensiveSkillsClass()
@@ -20,7 +21,7 @@ namespace FollowBot.Class
             
         }
 
-        public DefensiveSkillsClass(bool enabled, string name, bool useEs, int threshold, int sleepSeconds, bool castOnLeader)
+        public DefensiveSkillsClass(bool enabled, string name, bool useEs, int threshold, double sleepSeconds, bool castOnLeader)
         {
             Enabled = enabled;
             Name = name;
@@ -65,12 +66,12 @@ namespace FollowBot.Class
                 NotifyPropertyChanged(nameof(Threshold));
             }
         }
-        public int SleepSeconds
+        public double SleepSeconds
         {
             get { return _sleepSeconds; }
             set
             {
-                _sleepSeconds = value;
+                _sleepSeconds = Math.Round(value, 1, MidpointRounding.AwayFromZero);
                 NotifyPropertyChanged(nameof(SleepSeconds));
             }
         }

@@ -13,19 +13,21 @@ namespace FollowBot.Class
         private bool _useEs;
         private bool _useMana;
         private int _threshold;
+        private int _cooldown;
 
         public FlasksClass()
         {
             
         }
 
-        public FlasksClass(bool enabled, int slot, bool useEs, bool useMana, int threshold)
+        public FlasksClass(bool enabled, int slot, bool useEs, bool useMana, int threshold, int cooldown)
         {
             Enabled = enabled;
             Slot = slot;
             UseEs = useEs;
             UseMana = useMana;
             Threshold = threshold;
+            Cooldown = cooldown;
         }
 
         public int Slot
@@ -71,6 +73,15 @@ namespace FollowBot.Class
             {
                 _threshold = value;
                 NotifyPropertyChanged(nameof(Threshold));
+            }
+        }
+        public int Cooldown
+        {
+            get { return _cooldown; }
+            set
+            {
+                _cooldown = value;
+                NotifyPropertyChanged(nameof(Cooldown));
             }
         }
 

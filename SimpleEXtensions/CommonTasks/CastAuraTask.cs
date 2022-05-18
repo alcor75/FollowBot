@@ -13,14 +13,21 @@ namespace FollowBot
     public class CastAuraTask : ITask
     {
         private const int MinGolemHpPercent = 80;
-
+        private static List<int> _temporaryBlacklistedAuras = new List<int>();
         public async Task<bool> Run()
         {
             var area = World.CurrentArea;
-            if (!area.IsHideoutArea && !area.IsMap && !area.IsMapRoom && !area.IsOverworldArea)
+            //if (!area.IsHideoutArea && !area.IsMap && !area.IsMapRoom && !area.IsOverworldArea)
+            if (area.IsTown)
                 return false;
 
             await Coroutines.CloseBlockingWindows();
+
+            if (FollowBotSettings.Instance.UseStalkerSentinel)
+            {
+                if (!LokiPoe.InGameState.SentinelSkillUi.StalkerSentinel.IsActive && LokiPoe.InGameState.SentinelSkillUi.StalkerSentinel.CanUse)
+                    LokiPoe.InGameState.SentinelSkillUi.StalkerSentinel.Activate();
+            }
 
             var golemSkill = SkillBar.Skills.FirstOrDefault(s => s.IsOnSkillBar && s.SkillTags.Contains("golem"));
             if (golemSkill != null)
@@ -68,7 +75,16 @@ namespace FollowBot
                 GlobalLog.Error($"[CastAuraTask] Fail to cast \"{name}\". Error: \"{used}\".");
                 return;
             }
-            await Wait.For(() => !LokiPoe.Me.HasCurrentAction && (PlayerHasAura(name) || PlayerHasAura(id)), "aura applying");
+
+            if(!await Wait.For(() => !LokiPoe.Me.HasCurrentAction && (PlayerHasAura(name) || PlayerHasAura(id)), "aura applying"))
+            {
+                GlobalLog.Warn($"[CastAuraTask] Failed to apply aura \"{name}\".");
+                GlobalLog.Warn($"[CastAuraTask] Pls make sure you can cast this aura (you have ennoght mana).");
+                GlobalLog.Warn($"[CastAuraTask] Also make sure you have blacklisted the auras you dont want to use (Settings-Content-SkillBlacklist).");
+                GlobalLog.Warn($"[CastAuraTask] This error Usually indicate that you have more Auras, slotted, than you can substain with your mana.");
+                GlobalLog.Warn($"[CastAuraTask] The aura \"{name}\" will not be blacklisted to allow the bot to continue, the aura will be recasted next time you stop/start the bot.");
+                _temporaryBlacklistedAuras.Add(id);
+            }
             await Wait.SleepSafe(100);
         }
 
@@ -95,7 +111,7 @@ namespace FollowBot
         private static List<Skill> GetAurasForCast()
         {
             var auras = new List<Skill>();
-            foreach (var aura in AllAuras)
+            foreach (var aura in AllWhitelistedAuras)
             {
                 if (FollowBotSettings.Instance.IgnoreHiddenAuras && !aura.IsOnSkillBar)
                     continue;
@@ -110,7 +126,22 @@ namespace FollowBot
             return auras;
         }
 
-        private static IEnumerable<Skill> AllAuras => SkillBar.Skills.Where(skill => !SkillBlacklist.IsBlacklisted(skill) && (AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse));
+        private static IEnumerable<Skill> AllAuras
+        {
+            get
+            {
+                return SkillBar.Skills.Where(skill => AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse);
+            }
+        }
+        private static IEnumerable<Skill> AllWhitelistedAuras
+        {
+            get
+            {
+                return SkillBar.Skills.Where(skill => _temporaryBlacklistedAuras.All(x => x != skill.Id) &&
+                !SkillBlacklist.IsBlacklisted(skill) &&
+                (AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse));
+            }
+        }
 
         private static bool PlayerHasAura(string auraName)
         {
@@ -213,6 +244,7 @@ namespace FollowBot
 
         public void Start()
         {
+            _temporaryBlacklistedAuras.Clear();
         }
 
         public void Stop()

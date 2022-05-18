@@ -171,4 +171,5 @@ namespace FollowBot.Class
 		public const string CoralitoSignature = "Coralito's Signature";
 		public const string SoulCatcher = "Soul Catcher";
 	}
+   
 }

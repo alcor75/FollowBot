@@ -45,6 +45,7 @@ namespace FollowBot
         #region Party Role
         private bool _shouldKill;
         private bool _shouldLoot;
+        private bool _useStalkerSentinel;
         #endregion
 
         #region Defence
@@ -110,6 +111,13 @@ namespace FollowBot
             set
             { _shouldLoot = value; NotifyPropertyChanged(() => ShouldLoot); }
         }
+        [DefaultValue(false)]
+        public bool UseStalkerSentinel
+        {
+            get { return _useStalkerSentinel; }
+            set
+            { _useStalkerSentinel = value; NotifyPropertyChanged(() => UseStalkerSentinel); }
+        }
         #endregion
 
         #region Defence Skills
@@ -149,11 +157,11 @@ namespace FollowBot
         {
             ObservableCollection<FlasksClass> flasks = new ObservableCollection<FlasksClass>();
 
-            flasks.Add(new FlasksClass(false, 1, false, false, 0));
-            flasks.Add(new FlasksClass(false, 2, false, false, 0));
-            flasks.Add(new FlasksClass(false, 3, false, false, 0));
-            flasks.Add(new FlasksClass(false, 4, false, false, 0));
-            flasks.Add(new FlasksClass(false, 5, false, false, 0));
+            flasks.Add(new FlasksClass(false, 1, false, false, 0, 0));
+            flasks.Add(new FlasksClass(false, 2, false, false, 0, 0));
+            flasks.Add(new FlasksClass(false, 3, false, false, 0, 0));
+            flasks.Add(new FlasksClass(false, 4, false, false, 0, 0));
+            flasks.Add(new FlasksClass(false, 5, false, false, 0, 0));
             return flasks;
         }
 

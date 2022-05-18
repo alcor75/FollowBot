@@ -50,14 +50,16 @@ namespace FollowBot
                 return false;
             }
 
-            var distance = FollowBot.Leader.Position.Distance(LokiPoe.Me.Position);
-            if (ExilePather.PathExistsBetween(LokiPoe.Me.Position, FollowBot.Leader.Position))
-                _lastSeenMasterPosition = FollowBot.Leader.Position;
+            var leader = FollowBot.Leader;
 
-            if (distance > FollowBotSettings.Instance.MaxFollowDistance)
+            var distance = leader.Position.Distance(LokiPoe.Me.Position);
+            if (ExilePather.PathExistsBetween(LokiPoe.Me.Position, ExilePather.FastWalkablePositionFor(leader.Position)))
+                _lastSeenMasterPosition = leader.Position;
+
+            if (distance > FollowBotSettings.Instance.MaxFollowDistance || (leader.HasCurrentAction && leader.CurrentAction.Skill.InternalId == "Move")  )
             {
                 var pos = ExilePather.FastWalkablePositionFor(LokiPoe.Me.Position.GetPointAtDistanceBeforeEnd(
-                    FollowBot.Leader.Position,
+                    leader.Position,
                     LokiPoe.Random.Next(FollowBotSettings.Instance.FollowDistance,
                         FollowBotSettings.Instance.MaxFollowDistance)));
                 if (pos == Vector2i.Zero || !ExilePather.PathExistsBetween(LokiPoe.Me.Position, pos))
@@ -147,11 +149,10 @@ namespace FollowBot
 
                 if (LokiPoe.Me.Position.Distance(pos) < 50)
                 {
-                    
                     LokiPoe.InGameState.SkillBarHud.UseAt(FollowBot.LastBoundMoveSkillSlot, false, pos);
                 }
                 else
-                    Move.Towards(pos, $"{FollowBot.Leader.Name}");
+                    Move.Towards(pos, $"{leader.Name}");
                 return true;
             }
             KeyManager.ClearAllKeyStates();

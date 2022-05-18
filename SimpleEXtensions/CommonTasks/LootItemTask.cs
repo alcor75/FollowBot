@@ -60,14 +60,6 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
                 _item = validItems.OrderBy(i => i.Position.DistanceSqr).First();
 			}
 
-            //if (_item.Position.AsVector.Distance(FollowBot.Leader != null
-            //        ? FollowBot.Leader.Position
-            //        : LokiPoe.Me.Position) > FollowBotSettings.Instance.MaxLootDistance)
-            //{
-            //    _item = null;
-            //    return true;
-            //}
-
             if (!CanFit(_item.Size, Inventories.AvailableInventorySquares))
             {
                 GlobalLog.Warn($"[LootItemTask] No room in inventory for {_item.Position.Name}");
@@ -139,7 +131,15 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
 
             await PlayerAction.EnableAlwaysHighlight();
 
-			GlobalLog.Debug($"[LootItemTask] Now picking up {pos}");
+            if (!itemObj.HasVisibleHighlightLabel)
+            {
+                GlobalLog.Debug($"[LootItemTask] skipping {pos}, becouse it don't have a visible label");
+                _item.Ignored = true;
+                _item = null;
+                return true;
+            }
+            
+            GlobalLog.Debug($"[LootItemTask] Now picking up {pos}");
 
 			CachedItem cached = new CachedItem(itemObj.Item);
 

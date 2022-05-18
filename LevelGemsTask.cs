@@ -177,8 +177,7 @@ namespace FollowBot
                 ObservableCollection<FollowBotSettings.SkillGemEntry> userSkillGems = FollowBotSettings.Instance.UserSkillGemsInOffHands;
                 foreach (FollowBotSettings.SkillGemEntry g in userSkillGems)
                 {
-                    if (FollowBotSettings.Instance.GemDebugStatements)
-                        gemsToConsider.Add(string.Format("{0} [{1}: {2}]", g.Name, g.InventorySlot, g.SocketIndex));
+                    gemsToConsider.Add(string.Format("{0} [{1}: {2}]", g.Name, g.InventorySlot, g.SocketIndex));
                 }
             }
             else if (FollowBotSettings.Instance.LevelAllGems)
@@ -186,8 +185,7 @@ namespace FollowBot
                 ObservableCollection<FollowBotSettings.SkillGemEntry> userSkillGems = FollowBotSettings.Instance.UserSkillGems;
                 foreach (FollowBotSettings.SkillGemEntry g in userSkillGems)
                 {
-                    if (FollowBotSettings.Instance.GemDebugStatements)
-                        gemsToConsider.Add(string.Format("{0} [{1}: {2}]", g.Name, g.InventorySlot, g.SocketIndex));
+                    gemsToConsider.Add(string.Format("{0} [{1}: {2}]", g.Name, g.InventorySlot, g.SocketIndex));
                 }
             }
 
@@ -197,7 +195,7 @@ namespace FollowBot
                 {
                     if (FollowBotSettings.Instance.GemDebugStatements)
                     {
-                        Log.DebugFormat("[LevelGemsTask] {0} => {1}.", gem.Name, str);
+                        Log.DebugFormat("[LevelGemsTask] Adding {0} To gems to level.", gem.Name);
                     }
                     return true;
                 }

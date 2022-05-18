@@ -112,7 +112,8 @@ namespace FollowBot
         public async Task<bool> Run()
         {
             if (!LokiPoe.IsInGame) return false;
-            if (!World.CurrentArea.IsCombatArea) return false;
+            if (LokiPoe.CurrentWorldArea.IsTown) return false;
+            if (!LokiPoe.CurrentWorldArea.IsCombatArea) return false;
             var hpPct = LokiPoe.Me.HealthPercent;
             var esPct = LokiPoe.Me.EnergyShieldPercent;
             var manaPct = LokiPoe.Me.ManaPercent;
@@ -121,9 +122,12 @@ namespace FollowBot
             foreach (var flask in FollowBotSettings.Instance.Flasks)
             {
                 if (!flask.Enabled) continue;
-                if (flask.PostUseDelay.ElapsedMilliseconds < 1000) continue;
+                var postUseDelay = flask.PostUseDelay.ElapsedMilliseconds;
+                if (postUseDelay < 100) continue;
+                if (postUseDelay < flask.Cooldown) continue;
                 var thisflask = FlaskHud.InventoryControl.Inventory.Items.FirstOrDefault(x => x.LocationTopLeft.X == flask.Slot - 1);
                 if (thisflask == null) continue;
+                if (thisflask.Name == Class.FlaskNames.Quicksilver && LokiPoe.Me.HasAura(QsilverEffect)) continue;
                 if (!thisflask.Components.FlaskComponent.IsInstantRecovery && flask.PostUseDelay.ElapsedMilliseconds < thisflask.Components.FlaskComponent.RecoveryTime.TotalMilliseconds) continue;
                 var threshold = flask.UseEs ? esPct : flask.UseMana ? manaPct : hpPct;
                 if (threshold < flask.Threshold)
