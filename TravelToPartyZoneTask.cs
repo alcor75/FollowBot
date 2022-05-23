@@ -20,6 +20,7 @@ namespace FollowBot
         private readonly ILog Log = Logger.GetLoggerInstanceForType();
         private bool _enabled = true;
         private Stopwatch _portalRequestStopwatch = Stopwatch.StartNew();
+        private static int _zoneCheckRetry = 0;
 
         public string Name { get { return "TravelToPartyZone"; } }
         public string Description { get { return "This task will travel to party grind zone."; } }
@@ -47,8 +48,22 @@ namespace FollowBot
 
             var leader = LokiPoe.InstanceInfo.PartyMembers.FirstOrDefault(x => x.MemberStatus == PartyStatus.PartyLeader);
             if (leader == null) return false;
-            if (LokiPoe.InGameState.PartyHud.IsInSameZone(leader.PlayerEntry.Name)) return false;
-
+            var leadername = leader.PlayerEntry.Name;
+            if (LokiPoe.InGameState.PartyHud.IsInSameZone(leadername))
+            {
+                _zoneCheckRetry = 0;
+                return false;
+            }
+            else
+            {
+                _zoneCheckRetry ++;
+                if (_zoneCheckRetry < 3)
+                {
+                    await Coroutines.LatencyWait();
+                    GlobalLog.Warn($"IsInSameZone returned false for {leadername} retry [{_zoneCheckRetry}/3]");
+                    return true;
+                }
+            }
 
             //First check for Delve portals:
             var delveportal = LokiPoe.ObjectManager.GetObjectsByType<AreaTransition>().FirstOrDefault(x => x.Name == "Azurite Mine" && (x.Metadata == "Metadata/MiscellaneousObject/PortalTransition" || x.Metadata == "Metadata/MiscellaneousObjects/PortalTransition"));
@@ -149,150 +164,8 @@ namespace FollowBot
                 return false;
             }
 
-            await PartyHelper.FastGotoPartyZone(leader.PlayerEntry.Name);
+            await PartyHelper.FastGotoPartyZone(leadername);
             return true;
-            //if (World.CurrentArea.WorldAreaId == leader.PlayerEntry.Area.WorldAreaId) return false;
-            //Log.DebugFormat("[{0}] party leader is: {1}, zone: {2}", Name, leader.PlayerEntry.Name, leader.PlayerEntry.Area.Name);
-            //if (leader.PlayerEntry.Area.IsTown)
-            //{
-            //    if (!LokiPoe.Me.IsInTown)
-            //    {
-            //        if (LokiPoe.LocalData.WorldArea.IsMap || LokiPoe.LocalData.WorldArea.IsOverworldArea)
-            //        {
-            //            if (await TakePortal())
-            //                return true;
-            //        }
-            //        await PlayerAction.TpToTown();
-            //        return true;
-            //    }
-            //    Log.DebugFormat("[{0}] Party leader:{1} is still in Town.", Name, leader.PlayerEntry.Name);
-            //    return true;
-            //}
-            //if (leader.PlayerEntry.Area.IsHideoutArea)
-            //{
-            //    if (!LokiPoe.CurrentWorldArea.IsHideoutArea)
-            //    {
-            //        if (LokiPoe.LocalData.WorldArea.IsMap || LokiPoe.LocalData.WorldArea.IsOverworldArea)
-            //        {
-            //            if (await TakePortal())
-            //                return true;
-            //            else
-            //            {
-            //                await PlayerAction.TpToTown();
-            //                return true;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            Log.DebugFormat("[{0}] Moving to {1} Hideout.", Name, leader.PlayerEntry.Name);
-            //            if (!await PartyHelper.GoToPartyHideOut(leader.PlayerEntry.Name))
-            //            {
-            //                Log.DebugFormat("[{0}] Failed to visit Party leader:{1} Hideout.", Name, leader.PlayerEntry.Name);
-            //                return true;
-            //            }
-            //        }
-                    
-            //        return true;
-            //    }
-            //    Log.DebugFormat("[{0}] Party leader:{1} is still in Hideout.", Name, leader.PlayerEntry.Name);
-            //    return true;
-            //}
-            //if (leader.PlayerEntry.Area.IsMap)
-            //{
-            //    if (!LokiPoe.Me.IsInHideout)
-            //    {
-            //        if (!await PartyHelper.GoToPartyHideOut(leader.PlayerEntry.Name))
-            //        {
-            //            Log.DebugFormat("[{0}] Failed to visit Party leader:{1} Hideout.", Name, leader.PlayerEntry.Name);
-            //            return true;
-            //        }
-            //        return true;
-            //    }
-            //    if (!await TakePortal())
-            //        return true;                
-            //}
-            //if (leader.PlayerEntry.Area.IsOverworldArea)
-            //{
-            //    if (LokiPoe.Me.IsInOverworld)
-            //    {
-            //        await PlayerAction.TpToTown();
-            //        return true;
-            //    }
-            //    if (LokiPoe.CurrentWorldArea != leader.PlayerEntry.Area.GoverningTown)
-            //    {
-            //        var result = await TravelHelper.TravelToZone(leader.PlayerEntry.Area.GoverningTown);
-            //        if (!result)
-            //        {
-            //            FollowBot.Log.DebugFormat("[PartyPlugin] Can't navigate overworld zone the leader is in");
-            //        }
-            //        return true;
-            //    }
-                
-            //    if (_portalRequestStopwatch.ElapsedMilliseconds > 10000 )
-            //    {
-            //        _portalRequestStopwatch.Restart();
-            //        Log.DebugFormat("[{0}] Failed to find portals, requesting one.", Name);
-            //        Random rnd = new Random(DateTime.Now.Millisecond);
-            //        string str = string.Format("%{0}", PartyHelper.PartyPortal[rnd.Next(0, PartyHelper.PartyPortal.Count - 1)]);
-            //        LokiPoe.InGameState.ChatPanel.Chat(str);
-            //        await Coroutines.ReactionWait();
-            //        return true;
-            //    }
-            //    else
-            //    {
-            //        var portal = LokiPoe.LocalData.TownPortals.FirstOrDefault(x => x.OwnerName == leader.PlayerEntry.Name && x.Area.WorldAreaId == leader.PlayerEntry.Area.WorldAreaId);
-
-            //        if (portal != null)
-            //        {
-            //            if (portal.NetworkObject.Position.Distance(LokiPoe.Me.Position) > 18)
-            //                await Move.AtOnce(portal.NetworkObject.Position, "Move to portal");
-
-            //            await Coroutines.InteractWith<Portal>(portal.NetworkObject);
-
-            //            await Coroutines.ReactionWait();
-            //            _portalRequestStopwatch.Stop();
-            //            return true;
-            //        }
-            //        if (_portalRequestStopwatch.ElapsedMilliseconds > 30000)
-            //            _portalRequestStopwatch.Stop();
-            //        return true;
-            //    }
-            //}
-            //if (leader.PlayerEntry.Area.IsLabyrinthArea)
-            //{
-            //    if (!World.CurrentArea.IsLabyrinthArea)
-            //    {
-            //        if (LokiPoe.Me.IsInOverworld)
-            //        {
-            //            await PlayerAction.TpToTown();
-            //            return true;
-            //        }
-            //        if (LokiPoe.CurrentWorldArea != leader.PlayerEntry.Area.GoverningTown)
-            //        {
-            //            var result = await TravelHelper.TravelToZone(leader.PlayerEntry.Area.GoverningTown);
-            //            if (!result)
-            //            {
-            //                FollowBot.Log.DebugFormat("[PartyPlugin] Can't navigate GoverningTown zone the leader is in");
-            //            }
-            //            return true;
-            //        }
-            //        var plaza = LokiPoe.ObjectManager.AreaTransition("Aspirants' Plaza");
-            //        if (plaza != null)
-            //        {
-            //            await Move.AtOnce(plaza.Position, "Move to Aspirant's Plaza");
-            //            await Coroutines.LatencyWait();
-            //            await PlayerAction.Interact(plaza);
-            //            await Coroutines.LatencyWait();
-            //            await Coroutines.ReactionWait();
-            //            await Coroutines.LatencyWait();
-            //            await PlayerAction.Interact(plaza);
-            //            await Coroutines.LatencyWait();
-            //            return true;
-            //        }
-            //    }
-            //}
-            //Log.DebugFormat("[{0}] Failed to Travel to party zone", Name);
-            //return true;
         }
 
         private async Task<bool> TakePortal()
@@ -321,6 +194,11 @@ namespace FollowBot
 
         public MessageResult Message(Message message)
         {
+            if (message.Id == Events.Messages.AreaChanged)
+            {
+                _zoneCheckRetry = 0;
+                return MessageResult.Processed;
+            }
             if (message.Id == "Enable")
             {
                 _enabled = true;

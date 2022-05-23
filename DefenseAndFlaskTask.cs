@@ -7,7 +7,6 @@ using DreamPoeBot.Loki.Game;
 using DreamPoeBot.Loki.Game.Objects;
 using DreamPoeBot.Loki.RemoteMemoryObjects;
 using FollowBot.Class;
-using FollowBot.SimpleEXtensions;
 using FlaskHud = DreamPoeBot.Loki.Game.LokiPoe.InGameState.QuickFlaskHud;
 
 namespace FollowBot
@@ -113,7 +112,9 @@ namespace FollowBot
         {
             if (!LokiPoe.IsInGame) return false;
             if (LokiPoe.CurrentWorldArea.IsTown) return false;
+            if (LokiPoe.CurrentWorldArea.Id == "HeistHub") return false;
             if (!LokiPoe.CurrentWorldArea.IsCombatArea) return false;
+            
             var hpPct = LokiPoe.Me.HealthPercent;
             var esPct = LokiPoe.Me.EnergyShieldPercent;
             var manaPct = LokiPoe.Me.ManaPercent;

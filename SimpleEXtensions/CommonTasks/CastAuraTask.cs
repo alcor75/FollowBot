@@ -18,7 +18,7 @@ namespace FollowBot
         {
             var area = World.CurrentArea;
             //if (!area.IsHideoutArea && !area.IsMap && !area.IsMapRoom && !area.IsOverworldArea)
-            if (area.IsTown)
+            if (area.IsTown || area.Id == "HeistHub")
                 return false;
 
             await Coroutines.CloseBlockingWindows();
