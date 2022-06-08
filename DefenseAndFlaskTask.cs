@@ -7,6 +7,7 @@ using DreamPoeBot.Loki.Game;
 using DreamPoeBot.Loki.Game.Objects;
 using DreamPoeBot.Loki.RemoteMemoryObjects;
 using FollowBot.Class;
+using FollowBot.Helpers;
 using FlaskHud = DreamPoeBot.Loki.Game.LokiPoe.InGameState.QuickFlaskHud;
 
 namespace FollowBot
@@ -17,7 +18,7 @@ namespace FollowBot
         public const string ManaFlaskEffect = "flask_effect_mana";
         public const string EnduringManaFlaskEffect = "flask_effect_mana_not_removed_when_full";
         public const string QsilverEffect = "flask_utility_sprint";
-
+        public static bool _ShouldTeleport = false;
         private static readonly Dictionary<string, string> FlaskEffects = new Dictionary<string, string>
         {
             [FlaskNames.Diamond] = "flask_utility_critical_strike_chance",
@@ -111,6 +112,18 @@ namespace FollowBot
         public async Task<bool> Run()
         {
             if (!LokiPoe.IsInGame) return false;
+            if (_ShouldTeleport)
+            {
+                if (FollowBot._leaderPartyEntry != null && FollowBot._leaderPartyEntry.PlayerEntry != null)
+                {
+                    var leadername = FollowBot._leaderPartyEntry.PlayerEntry.Name;
+                    if (!string.IsNullOrEmpty(leadername))
+                    {
+                        await PartyHelper.FastGotoPartyZone(leadername);
+                    }
+                }
+                _ShouldTeleport = false;
+            }
             if (LokiPoe.CurrentWorldArea.IsTown) return false;
             if (LokiPoe.CurrentWorldArea.Id == "HeistHub") return false;
             if (!LokiPoe.CurrentWorldArea.IsCombatArea) return false;

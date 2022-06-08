@@ -35,6 +35,9 @@
     <Reference Include="DreamPoeBot">
       <HintPath>..\..\..\..\..\..\..\obama\DreamPoeBot.exe</HintPath>
     </Reference>
+    <Reference Include="GameOverlay">
+      <HintPath>..\..\..\..\..\..\DPBTradeBot\GameOverlay.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\..\..\..\..\obama\log4net.dll</HintPath>
     </Reference>
@@ -64,9 +67,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class\ChatParser.cs" />
     <Compile Include="Class\DefensiveSkillsClass.cs" />
     <Compile Include="Class\Flasks.cs" />
     <Compile Include="Class\FlasksClass.cs" />
+    <Compile Include="Class\OverlayWindow.cs" />
     <Compile Include="DefenseAndFlaskTask.cs" />
     <Compile Include="FollowBot.cs" />
     <Compile Include="LevelGemsTask.cs" />

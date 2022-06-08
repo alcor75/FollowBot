@@ -10,6 +10,7 @@ using DreamPoeBot.Loki.Game;
 using DreamPoeBot.Loki.Game.GameData;
 using DreamPoeBot.Loki.Game.NativeWrappers;
 using DreamPoeBot.Loki.Game.Objects;
+using FollowBot.Class;
 using FollowBot.SimpleEXtensions;
 using FollowBot.SimpleEXtensions.CommonTasks;
 using FollowBot.SimpleEXtensions.Global;
@@ -30,6 +31,10 @@ namespace FollowBot
         private readonly TaskManager _taskManager = new TaskManager();
         internal static bool IsOnRun;
         public static Stopwatch RequestPartySw = Stopwatch.StartNew();
+        private OverlayWindow _overlay = new OverlayWindow(LokiPoe.ClientWindowHandle);
+        private ChatParser _chatParser = new ChatParser();
+        private Stopwatch _chatSw = Stopwatch.StartNew();
+
         private static int _lastBoundMoveSkillSlot = -1;
         internal static int LastBoundMoveSkillSlot
         {
@@ -56,7 +61,7 @@ namespace FollowBot
                 }
 
                 var leaderName = leaderPartyEntry.PlayerEntry.Name;
-                if (leaderName == LokiPoe.Me.Name)
+                if (string.IsNullOrEmpty(leaderName) || leaderName == LokiPoe.Me.Name)
                 {
                     _leader = null;
                     return null;
@@ -151,6 +156,11 @@ namespace FollowBot
             PluginManager.Tick();
             RoutineManager.Tick();
 
+            if (_chatSw.ElapsedMilliseconds > 250)
+            {
+                _chatParser.Update();
+                _chatSw.Restart();
+            }
             // Check to see if the coroutine is finished. If it is, stop the bot.
             if (_coroutine.IsFinished)
             {
@@ -313,6 +323,8 @@ namespace FollowBot
         public async void Initialize()
         {
             BotManager.OnBotChanged += BotManagerOnOnBotChanged;
+            GameOverlay.TimerService.EnableHighPrecisionTimers();
+            _overlay.Start();
         }
 
         public void Deinitialize()
@@ -407,7 +419,7 @@ namespace FollowBot
         public string Name => "FollowBot";
         public string Author => "NotYourFriend, origial code from Unknown";
         public string Description => "Bot that follow leader.";
-        public string Version => "0.0.4.7";
+        public string Version => "0.0.4.9";
         public UserControl Control => _gui ?? (_gui = new FollowBotGui());
         public JsonSettings Settings => FollowBotSettings.Instance;
         public override string ToString() => $"{Name}: {Description}";

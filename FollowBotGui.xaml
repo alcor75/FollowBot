@@ -20,14 +20,15 @@
                         <WrapPanel Margin="0,5,0,0">
                             <Label Content="Follow Distance:"/>
                             <Label Content="min"/>
-                            <TextBox Text="{Binding Path=FollowDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50"/>
+                            <TextBox Text="{Binding Path=FollowDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" ToolTip="Min follow distance. the follower will try to keep a random distance from the leader between min and max follow distance."/>
                             <Label Content="max"/>
-                            <TextBox Text="{Binding Path=MaxFollowDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50"/>
+                            <TextBox Text="{Binding Path=MaxFollowDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" ToolTip="Max follow distance. the follower will try to keep a random distance from the leader between min and max follow distance."/>
                         </WrapPanel>
 
                         <Label Content="Party role:   "></Label>
                         <Grid>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -39,14 +40,15 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <CheckBox Grid.Row="0" Grid.Column="0" Content="Kill Monsters" Margin="10,0,10,0" IsChecked="{Binding Path=ShouldKill, Mode=TwoWay}" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="0" Grid.Column="0" Content="Kill Monsters" Margin="10,0,10,0" IsChecked="{Binding Path=ShouldKill, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="Should the Follower use the Routine configured skills to fight?"/>
                             <Label Grid.Row="0" Grid.Column="1" Content="Max combat Distance:" VerticalAlignment="Center"/>
-                            <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Path=MaxCombatDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Path=MaxCombatDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" VerticalAlignment="Center" ToolTip="Max distance from the leader, the follower will consider a mob targhetable and so try to fight."/>
 
-                            <CheckBox Grid.Row="1" Grid.Column="0" Content="Loot Visible Items" Margin="10,0,10,0" IsChecked="{Binding Path=ShouldLoot, Mode=TwoWay}" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="1" Grid.Column="0" Content="Loot Visible Items" Margin="10,0,10,0" IsChecked="{Binding Path=ShouldLoot, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="Should the Follower try to loot ALL visible items? PLS NOTE: you nee to use a ingame item filter to reduce the quantity of visible items."/>
                             <Label Grid.Row="1" Grid.Column="1" Content="Max loot Distance:" VerticalAlignment="Center"/>
-                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Path=MaxLootDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" VerticalAlignment="Center"/>
-                            <CheckBox Grid.Row="2" Grid.Column="0" Content="Use Stalker Sentinel" Margin="10,0,10,0" IsChecked="{Binding Path=UseStalkerSentinel, Mode=TwoWay}" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Path=MaxLootDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" VerticalAlignment="Center" ToolTip="Max distance from the leader, the follower is allowed to move to loot items. All Items above this distance, will be logged and ignored."/>
+                            <CheckBox Grid.Row="2" Grid.Column="0" Content="Use Stalker Sentinel" Margin="10,0,10,0" IsChecked="{Binding Path=UseStalkerSentinel, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="Use the Stalker Sentinel if equipped and have charged."/>
+                            <CheckBox Grid.Row="3" Grid.Column="0" Content="Don't Port Out of Map" Margin="10,0,10,0" IsChecked="{Binding Path=DontPortOutofMap, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="If Enabled, the follower will not try to exit a map if the Leader die or leave the area, you will need to use chat command to leave the area."/>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
@@ -194,6 +196,108 @@
                     </Grid>
 
                 </StackPanel>
+            </TabItem>
+            <TabItem Header="Chat Commands" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Label Content="" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center"></Label>
+                    <Label Content="On" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center"></Label>
+                    <Label Content="Off" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"></Label>
+                    <Label Content="Teleport to Leader: " Grid.Row="1" Grid.Column="0"/>
+                    <TextBox Text="{Binding Path=TeleportToLeaderChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="1" Grid.Column="1" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by trying to teleport to the leader zone."/>
+
+                    <Label Content="Follow: " Grid.Row="2" Grid.Column="0"/>
+                    <TextBox Text="{Binding Path=StartFollowChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="2" Grid.Column="1" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by restart following the leader."/>
+                    <TextBox Text="{Binding Path=StopFollowChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="2" Grid.Column="2" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by stop following the leader, the follower will still perform common actions like cast auras, use flasks, use skills, loot or fight if enabled."/>
+
+                    <Label Content="Loot: " Grid.Row="3" Grid.Column="0"/>
+                    <TextBox Text="{Binding Path=StartLootChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="3" Grid.Column="1" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by turning on the loot feature."/>
+                    <TextBox Text="{Binding Path=StopLootChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="3" Grid.Column="2" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by turning off the loot feature."/>
+
+                    <Label Content="Attack: " Grid.Row="4" Grid.Column="0"/>
+                    <TextBox Text="{Binding Path=StartAttackChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="4" Grid.Column="1" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by turning on the fight feature."/>
+                    <TextBox Text="{Binding Path=StopAttackChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="4" Grid.Column="2" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by turning off the fight feature."/>
+
+                    <Label Content="Sentinel: " Grid.Row="5" Grid.Column="0"/>
+                    <TextBox Text="{Binding Path=StartSentinelChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="5" Grid.Column="1" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by turning on the sentinel feature."/>
+                    <TextBox Text="{Binding Path=StopSentinelChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="5" Grid.Column="2" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by turning off the sentinel feature."/>
+
+                    <Label Content="Auto Teleport: " Grid.Row="6" Grid.Column="0"/>
+                    <TextBox Text="{Binding Path=StartAutoTeleportChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="6" Grid.Column="1" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by turning on the Don't Port Out of Map feature."/>
+                    <TextBox Text="{Binding Path=StopAutoTeleportChatCommand, Mode=TwoWay}" MinWidth="100" Grid.Row="6" Grid.Column="2" ToolTip="The follower will react to this message (if the message come from the party leader in whisper or group chat) by turning off the Don't Port Out of Map feature."/>
+
+</Grid>
+            </TabItem>
+            <TabItem Header="Overlay" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="Enable Overlay: " Margin="3,5,3,1"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" Margin="3" IsChecked="{Binding EnableOverlay, Mode=TwoWay}" ToolTipService.ToolTip="Enable and disable the Overlay drawing."/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="DrawInBackground: " Margin="3,5,3,1"/>
+                    <CheckBox Grid.Row="1" Grid.Column="1" Margin="3" IsChecked="{Binding DrawInBackground, Mode=TwoWay}" ToolTipService.ToolTip="If enabled, the Overlay is draw even when the game is not the top most foreground window."/>
+                    
+                    <Label Grid.Row="2" Grid.Column="0" Content="Draw Mobs: " Margin="3,5,3,1"/>
+                    <CheckBox Grid.Row="2" Grid.Column="1" Margin="3" IsChecked="{Binding DrawMobs, Mode=TwoWay}" ToolTipService.ToolTip="Draw the mobs around you."/>
+                    
+                    <Label Grid.Row="3" Grid.Column="0" Content="Draw Corpses: " Margin="3,5,3,1"/>
+                    <CheckBox Grid.Row="3" Grid.Column="1" Margin="3" IsChecked="{Binding DrawCorpses, Mode=TwoWay}" ToolTipService.ToolTip="Draw the Corpses around you."/>
+
+                    <Label Content="Overlay Fps: " Grid.Row="4" Grid.Column="0" Margin="3,5,3,1"/>
+                    <WrapPanel Grid.Row="4" Grid.Column="1" Margin="3">
+                        <Slider Name="SlFPS" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="100" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="Change the Overlay draw frequency, higher number, higher fps and higher resource consumption."/>
+                        <TextBox Name="TbFPS" Text="{Binding ElementName=SlFPS, Path=Value}" MinWidth="40"  HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
+                    </WrapPanel>
+
+                    <Label Content="Overlay X Position: " Grid.Row="5" Grid.Column="0" Margin="3,5,3,1"/>
+                    <WrapPanel Grid.Row="5" Grid.Column="1" Margin="3">
+                        <Slider Name="SlXPos" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=OverlayXCoord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="5000" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="Change the Overlay draw X position."/>
+                        <TextBox Name="TbXPos" Text="{Binding ElementName=SlXPos, Path=Value}" MinWidth="40"  HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
+                    </WrapPanel>
+
+                    <Label Content="Overlay Y Position: " Grid.Row="6" Grid.Column="0" Margin="3,5,3,1"/>
+                    <WrapPanel Grid.Row="6" Grid.Column="1" Margin="3">
+                        <Slider Name="SlYPos" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=OverlayYCoord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="5000" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="Change the Overlay draw Y position."/>
+                        <TextBox Name="TbYPos" Text="{Binding ElementName=SlYPos, Path=Value}" MinWidth="40"  HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
+                    </WrapPanel>
+
+                    <Label Content="Overlay Transparency: " Grid.Row="7" Grid.Column="0" Margin="3,5,3,1"/>
+                    <WrapPanel Grid.Row="7" Grid.Column="1" Margin="3">
+                        <Slider Name="SlTransparency" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=OverlayTransparency, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="255" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="Change the Overlay background transparency."/>
+                        <TextBox Name="TbTransparency" Text="{Binding ElementName=SlTransparency, Path=Value}" MinWidth="40"  HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
+                    </WrapPanel>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

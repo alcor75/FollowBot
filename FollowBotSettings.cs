@@ -46,6 +46,8 @@ namespace FollowBot
         private bool _shouldKill;
         private bool _shouldLoot;
         private bool _useStalkerSentinel;
+        private bool _dontPortOutofMap;
+        private bool _shouldFollow = true;
         #endregion
 
         #region Defence
@@ -96,7 +98,9 @@ namespace FollowBot
             set
             { _maxLootDistance = value; NotifyPropertyChanged(() => MaxLootDistance); }
         }
+
         #region Party Role
+
         [DefaultValue(true)]
         public bool ShouldKill
         {
@@ -117,6 +121,20 @@ namespace FollowBot
             get { return _useStalkerSentinel; }
             set
             { _useStalkerSentinel = value; NotifyPropertyChanged(() => UseStalkerSentinel); }
+        }
+        [DefaultValue(false)]
+        public bool DontPortOutofMap
+        {
+            get { return _dontPortOutofMap; }
+            set
+            { _dontPortOutofMap = value; NotifyPropertyChanged(() => DontPortOutofMap); }
+        }
+        [JsonIgnore]
+        public bool ShouldFollow
+        {
+            get { return _shouldFollow; }
+            set
+            { _shouldFollow = value; NotifyPropertyChanged(() => ShouldFollow); }
         }
         #endregion
 
@@ -410,6 +428,286 @@ namespace FollowBot
             LokiPoe.InstanceInfo.GetPlayerInventoryBySlot(InventorySlot.OffLeftHand),
             LokiPoe.InstanceInfo.GetPlayerInventoryBySlot(InventorySlot.OffRightHand),
         };
+        #endregion
+
+        #region ChatCommands
+
+        private string _TeleportToLeaderChatCommand;
+        private string _stopFollowChatCommand;
+        private string _startFollowChatCommand;
+        private string _stopLootChatCommand;
+        private string _startLootChatCommand;
+        private string _stopAttackChatCommand;
+        private string _startAttackChatCommand;
+        private string _stopSentinelChatCommand;
+        private string _startSentinelChatCommand;
+        private string _stopAutoTeleportChatCommand;
+        private string _startAutoTeleportChatCommand;
+
+        [DefaultValue("Tele")]
+        public string TeleportToLeaderChatCommand
+        {
+            get
+            {
+                return _TeleportToLeaderChatCommand;
+            }
+            set
+            {
+                _TeleportToLeaderChatCommand = value;
+                NotifyPropertyChanged(() => TeleportToLeaderChatCommand);
+            }
+        }
+
+        [DefaultValue("StopF")]
+        public string StopFollowChatCommand
+        {
+            get
+            {
+                return _stopFollowChatCommand;
+            }
+            set
+            {
+                _stopFollowChatCommand = value;
+                NotifyPropertyChanged(() => StopFollowChatCommand);
+            }
+        }
+
+        [DefaultValue("StartF")]
+        public string StartFollowChatCommand
+        {
+            get
+            {
+                return _startFollowChatCommand;
+            }
+            set
+            {
+                _startFollowChatCommand = value;
+                NotifyPropertyChanged(() => StartFollowChatCommand);
+            }
+        }
+
+        [DefaultValue("StopL")]
+        public string StopLootChatCommand
+        {
+            get
+            {
+                return _stopLootChatCommand;
+            }
+            set
+            {
+                _stopLootChatCommand = value;
+                NotifyPropertyChanged(() => StopLootChatCommand);
+            }
+        }
+
+        [DefaultValue("StartL")]
+        public string StartLootChatCommand
+        {
+            get
+            {
+                return _startLootChatCommand;
+            }
+            set
+            {
+                _startLootChatCommand = value;
+                NotifyPropertyChanged(() => StartLootChatCommand);
+            }
+        }
+
+        [DefaultValue("StopA")]
+        public string StopAttackChatCommand
+        {
+            get
+            {
+                return _stopAttackChatCommand;
+            }
+            set
+            {
+                _stopAttackChatCommand = value;
+                NotifyPropertyChanged(() => StopAttackChatCommand);
+            }
+        }
+
+        [DefaultValue("StartA")]
+        public string StartAttackChatCommand
+        {
+            get
+            {
+                return _startAttackChatCommand;
+            }
+            set
+            {
+                _startAttackChatCommand = value;
+                NotifyPropertyChanged(() => StartAttackChatCommand);
+            }
+        }
+
+        [DefaultValue("StopD")]
+        public string StopSentinelChatCommand
+        {
+            get
+            {
+                return _stopSentinelChatCommand;
+            }
+            set
+            {
+                _stopSentinelChatCommand = value;
+                NotifyPropertyChanged(() => StopSentinelChatCommand);
+            }
+        }
+
+        [DefaultValue("StartD")]
+        public string StartSentinelChatCommand
+        {
+            get
+            {
+                return _startSentinelChatCommand;
+            }
+            set
+            {
+                _startSentinelChatCommand = value;
+                NotifyPropertyChanged(() => StartSentinelChatCommand);
+            }
+        }
+
+        [DefaultValue("StopP")]
+        public string StopAutoTeleportChatCommand
+        {
+            get
+            {
+                return _stopAutoTeleportChatCommand;
+            }
+            set
+            {
+                _stopAutoTeleportChatCommand = value;
+                NotifyPropertyChanged(() => StopAutoTeleportChatCommand);
+            }
+        }
+
+        [DefaultValue("StartP")]
+        public string StartAutoTeleportChatCommand
+        {
+            get
+            {
+                return _startAutoTeleportChatCommand;
+            }
+            set
+            {
+                _startAutoTeleportChatCommand = value;
+                NotifyPropertyChanged(() => StartAutoTeleportChatCommand);
+            }
+        }
+
+        #endregion
+
+        #region Overlay
+
+        private bool _enableOverlay;
+        private bool _drawInBackground;
+        private bool _drawMobs;
+        private bool _drawCorpses;
+        private int _fps;
+        private int _overlayXCoord;
+        private int _overlayYCoord;
+        private int _overlayTransparency;
+
+        [DefaultValue(false)]
+        public bool EnableOverlay
+        {
+            get => _enableOverlay;
+            set
+            {
+                if (value == _enableOverlay) return;
+                _enableOverlay = value;
+                NotifyPropertyChanged(() => EnableOverlay);
+            }
+        }
+        [DefaultValue(false)]
+        public bool DrawInBackground
+        {
+            get => _drawInBackground;
+            set
+            {
+                if (value == _drawInBackground) return;
+                _drawInBackground = value;
+                NotifyPropertyChanged(() => DrawInBackground);
+            }
+        }
+        [DefaultValue(false)]
+        public bool DrawMobs
+        {
+            get => _drawMobs;
+            set
+            {
+                if (value == _drawMobs) return;
+                _drawMobs = value;
+                NotifyPropertyChanged(() => DrawMobs);
+            }
+        }
+        [DefaultValue(false)]
+        public bool DrawCorpses
+        {
+            get => _drawCorpses;
+            set
+            {
+                if (value == _drawCorpses) return;
+                _drawCorpses = value;
+                NotifyPropertyChanged(() => DrawCorpses);
+            }
+        }
+
+        [DefaultValue(30)]
+        public int FPS
+        {
+            get => _fps;
+            set
+            {
+                if (value == _fps) return;
+                _fps = value;
+                if (OverlayWindow.Instance != null)
+                    OverlayWindow.Instance.SetFps(_fps);
+                NotifyPropertyChanged(() => FPS);
+            }
+        }
+
+        [DefaultValue(15)]
+        public int OverlayXCoord
+        {
+            get => _overlayXCoord;
+            set
+            {
+                if (value == _overlayXCoord) return;
+                _overlayXCoord = value;
+                NotifyPropertyChanged(() => OverlayXCoord);
+            }
+        }
+
+        [DefaultValue(70)]
+        public int OverlayYCoord
+        {
+            get => _overlayYCoord;
+            set
+            {
+                if (value == _overlayYCoord) return;
+                _overlayYCoord = value;
+                NotifyPropertyChanged(() => OverlayYCoord);
+            }
+        }
+
+        [DefaultValue(70)]
+        public int OverlayTransparency
+        {
+            get => _overlayTransparency;
+            set
+            {
+                if (value == _overlayTransparency) return;
+                _overlayTransparency = value;
+                if (OverlayWindow.Instance != null)
+                    OverlayWindow.Instance.SetTransparency(_overlayTransparency);
+                NotifyPropertyChanged(() => OverlayTransparency);
+            }
+        }
+
         #endregion
     }
 }

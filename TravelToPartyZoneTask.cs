@@ -56,6 +56,11 @@ namespace FollowBot
             }
             else
             {
+                if (LokiPoe.CurrentWorldArea.IsMap || LokiPoe.CurrentWorldArea.Id.Contains("AfflictionTown") || LokiPoe.CurrentWorldArea.Id.Contains("Delve_"))
+                {
+                    if (FollowBotSettings.Instance.DontPortOutofMap) return false;
+                }
+
                 _zoneCheckRetry ++;
                 if (_zoneCheckRetry < 3)
                 {
@@ -91,9 +96,38 @@ namespace FollowBot
                 FollowBot.Leader = null;
                 return true;
             }
+            //Next check for Heist portals:
+            var heistportal = LokiPoe.ObjectManager.GetObjectByMetadata("Metadata/Terrain/Leagues/Heist/Objects/MissionEntryPortal");
+            if (heistportal != null && heistportal.Components.TargetableComponent.CanTarget)
+            {
+                Log.DebugFormat("[{0}] Found walkable heist portal.", Name);
+                if (LokiPoe.Me.Position.Distance(heistportal.Position) > 20)
+                {
+                    var walkablePosition = ExilePather.FastWalkablePositionFor(heistportal, 20);
+
+                    // Cast Phase run if we have it.
+                    FollowBot.PhaseRun();
+
+                    Move.Towards(walkablePosition, "moving to heist portal");
+                    return true;
+                }
+
+                var tele = await Coroutines.InteractWith(heistportal);
+
+                if (!tele)
+                {
+                    Log.DebugFormat("[{0}] heist portal error.", Name);
+                }
+
+                FollowBot.Leader = null;
+                return true;
+            }
+
             if (leader.PlayerEntry.Area.IsMap || leader.PlayerEntry.Area.IsTempleOfAtzoatl)
             {
-                await TakePortal();
+                if (!await TakePortal())
+                    await Coroutines.ReactionWait();
+                return true;
             }
             else if (leader.PlayerEntry.Area.IsLabyrinthArea)
             {

@@ -18,7 +18,7 @@ namespace FollowBot
         {
             var area = World.CurrentArea;
             //if (!area.IsHideoutArea && !area.IsMap && !area.IsMapRoom && !area.IsOverworldArea)
-            if (area.IsTown || area.Id == "HeistHub")
+            if (area.IsTown || area.Id == "HeistHub" || LokiPoe.Me.IsDead)
                 return false;
 
             await Coroutines.CloseBlockingWindows();
@@ -56,6 +56,7 @@ namespace FollowBot
             int slotForHidden = AllAuras.First(a => a.IsOnSkillBar).Slot;
             foreach (var aura in auras.OrderByDescending(a => a.Slot))
             {
+                if (LokiPoe.Me.IsDead) break;
                 if (aura.Slot == -1)
                 {
                     await SetAuraToSlot(aura, slotForHidden);
@@ -76,8 +77,9 @@ namespace FollowBot
                 return;
             }
 
-            if(!await Wait.For(() => !LokiPoe.Me.HasCurrentAction && (PlayerHasAura(name) || PlayerHasAura(id)), "aura applying"))
+            if(!await Wait.For(() => !LokiPoe.Me.IsDead && !LokiPoe.Me.HasCurrentAction && (PlayerHasAura(name) || PlayerHasAura(id)), "aura applying"))
             {
+                if (LokiPoe.Me.IsDead) return;
                 GlobalLog.Warn($"[CastAuraTask] Failed to apply aura \"{name}\".");
                 GlobalLog.Warn($"[CastAuraTask] Pls make sure you can cast this aura (you have ennoght mana).");
                 GlobalLog.Warn($"[CastAuraTask] Also make sure you have blacklisted the auras you dont want to use (Settings-Content-SkillBlacklist).");
