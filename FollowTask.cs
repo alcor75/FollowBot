@@ -41,7 +41,7 @@ namespace FollowBot
         public async Task<bool> Run()
         {
             if (!FollowBotSettings.Instance.ShouldFollow) return false;
-            if (!LokiPoe.IsInGame || LokiPoe.Me.IsDead || LokiPoe.Me.IsInTown || LokiPoe.Me.IsInHideout)
+            if (!LokiPoe.IsInGame || LokiPoe.Me.IsDead || LokiPoe.Me.IsInTown || LokiPoe.Me.IsInHideout || World.CurrentArea.Id == "HeistHub")
             {
                 return false;
             }
