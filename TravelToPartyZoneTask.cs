@@ -60,7 +60,12 @@ namespace FollowBot
                 {
                     if (FollowBotSettings.Instance.DontPortOutofMap) return false;
                 }
-
+                //check for different rouge harbour
+                if(leader.PlayerEntry.Area.Id == "HeistHub" && LokiPoe.CurrentWorldArea.Id == "HeistHub")
+                {
+                    //GlobalLog.Warn($"in differwnt harbour with  {leadername} ");
+                    return true;
+                }
                 _zoneCheckRetry ++;
                 if (_zoneCheckRetry < 3)
                 {
@@ -96,15 +101,20 @@ namespace FollowBot
                 FollowBot.Leader = null;
                 return true;
             }
-            //Next check for Heist portals:
+            //Next check for Heist entry portals:
             var heistportal = LokiPoe.ObjectManager.GetObjectByMetadata("Metadata/Terrain/Leagues/Heist/Objects/MissionEntryPortal");
+            //also check for heist exit portal
+            if (heistportal == null)
+            {
+                heistportal = LokiPoe.ObjectManager.GetObjectByMetadata("Metadata/Terrain/Leagues/Heist/Objects/MissionExitPortal");
+            }
+            //if we found portal 
             if (heistportal != null && heistportal.Components.TargetableComponent.CanTarget)
             {
                 Log.DebugFormat("[{0}] Found walkable heist portal.", Name);
                 if (LokiPoe.Me.Position.Distance(heistportal.Position) > 20)
                 {
                     var walkablePosition = ExilePather.FastWalkablePositionFor(heistportal, 20);
-
                     // Cast Phase run if we have it.
                     FollowBot.PhaseRun();
 
