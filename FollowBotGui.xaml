@@ -53,6 +53,33 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
+            <TabItem Header="Auras" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Content="The bot will try to cast all available Auras and AurificedCurses automatically."/>
+                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Content="If you use the Flesh and Stone skill, use this button to select your prefered stance."/>
+                    <Button Grid.Row="2" Grid.Column="0" FontWeight="Bold" Content="Change Stance" Click="ChangeStance_OnClick" Margin="5,1,25,1" ></Button>
+                    <Border BorderThickness="1" BorderBrush="White" CornerRadius="10" Grid.Row="2" Grid.Column="1">
+                        <Label FontWeight="Bold" Content="{Binding Path=BloorOrSand}" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                    </Border>
+                    
+                </Grid>
+            </TabItem>
             <TabItem Header="Flasks" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <DataGrid CanUserSortColumns="False" ItemsSource="{Binding Path=Flasks}" AutoGenerateColumns="False" AllowDrop="False" CanUserAddRows="False" VerticalAlignment="Top" Margin="0,5,0,0">
                     <DataGrid.Columns>

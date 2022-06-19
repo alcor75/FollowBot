@@ -71,6 +71,13 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
 
 			WalkablePosition pos = _item.Position;
 
+            if (pos.Distance > FollowBotSettings.Instance.MaxLootDistance)
+            {
+                GlobalLog.Warn($"[LootItemTask] {pos} is not to far away. [{pos.Distance}/FollowBotSettings.Instance.MaxLootDistance]");
+				_item.Ignored = true;
+                _item = null;
+                return true;
+			}
 			if (pos.Distance > 30 || pos.PathDistance > 34)
 			{
 				if (LogInterval.Elapsed)

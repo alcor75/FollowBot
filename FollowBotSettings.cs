@@ -48,6 +48,25 @@ namespace FollowBot
         private bool _useStalkerSentinel;
         private bool _dontPortOutofMap;
         private bool _shouldFollow = true;
+        private BloodAndSand _bloodOrSand;
+        #endregion
+
+        #region Auras
+
+        [DefaultValue(BloodAndSand.Sand)]
+        public BloodAndSand BloorOrSand
+        {
+            get
+            {
+                return _bloodOrSand;
+            }
+            set
+            {
+                _bloodOrSand = value;
+                NotifyPropertyChanged(() => BloorOrSand);
+            }
+        }
+
         #endregion
 
         #region Defence
@@ -709,6 +728,12 @@ namespace FollowBot
         }
 
         #endregion
+
+        public enum BloodAndSand
+        {
+            Blood,
+            Sand
+        }
     }
 }
 

@@ -70,5 +70,13 @@ namespace FollowBot
 				GlobalNameIgnoreTextBox.Text = e.AddedItems[0].ToString();
 			}
 		}
-	}
+
+        private void ChangeStance_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (FollowBotSettings.Instance.BloorOrSand == FollowBotSettings.BloodAndSand.Blood)
+                FollowBotSettings.Instance.BloorOrSand = FollowBotSettings.BloodAndSand.Sand;
+			else
+                FollowBotSettings.Instance.BloorOrSand = FollowBotSettings.BloodAndSand.Blood;
+		}
+    }
 }

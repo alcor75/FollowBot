@@ -42,8 +42,9 @@ namespace FollowBot
                     await Wait.SleepSafe(100);
                 }
             }
+            // Auras
             var auras = GetAurasForCast();
-            if (auras.Count > 0 && AllAuras.Any(a => a.IsOnSkillBar))
+            if (auras.Count > 0)
             {
                 GlobalLog.Info($"[CastAuraTask] Found {auras.Count} aura(s) for casting.");
                 await CastAuras(auras);
@@ -77,16 +78,33 @@ namespace FollowBot
                 return;
             }
 
-            if(!await Wait.For(() => !LokiPoe.Me.IsDead && !LokiPoe.Me.HasCurrentAction && (PlayerHasAura(name) || PlayerHasAura(id)), "aura applying"))
+            if (aura.InternalId == "blood_sand_armour")
             {
-                if (LokiPoe.Me.IsDead) return;
-                GlobalLog.Warn($"[CastAuraTask] Failed to apply aura \"{name}\".");
-                GlobalLog.Warn($"[CastAuraTask] Pls make sure you can cast this aura (you have ennoght mana).");
-                GlobalLog.Warn($"[CastAuraTask] Also make sure you have blacklisted the auras you dont want to use (Settings-Content-SkillBlacklist).");
-                GlobalLog.Warn($"[CastAuraTask] This error Usually indicate that you have more Auras, slotted, than you can substain with your mana.");
-                GlobalLog.Warn($"[CastAuraTask] The aura \"{name}\" will not be blacklisted to allow the bot to continue, the aura will be recasted next time you stop/start the bot.");
-                _temporaryBlacklistedAuras.Add(id);
+                if (!await Wait.For(() => !LokiPoe.Me.IsDead && !LokiPoe.Me.HasCurrentAction && LokiPoe.Me.Auras.Any(x => x.InternalName == "blood_armour" || x.InternalName == "sand_armour"), "aura applying"))
+                {
+                    if (LokiPoe.Me.IsDead) return;
+                    GlobalLog.Warn($"[CastAuraTask] Failed to apply aura \"{name}\".");
+                    GlobalLog.Warn($"[CastAuraTask] Pls make sure you can cast this aura (you have ennoght mana).");
+                    GlobalLog.Warn($"[CastAuraTask] Also make sure you have blacklisted the auras you dont want to use (Settings-Content-SkillBlacklist).");
+                    GlobalLog.Warn($"[CastAuraTask] This error Usually indicate that you have more Auras, slotted, than you can substain with your mana.");
+                    GlobalLog.Warn($"[CastAuraTask] The aura \"{name}\" will not be blacklisted to allow the bot to continue, the aura will be recasted next time you stop/start the bot.");
+                    _temporaryBlacklistedAuras.Add(id);
+                }
             }
+            else
+            {
+                if (!await Wait.For(() => !LokiPoe.Me.IsDead && !LokiPoe.Me.HasCurrentAction && PlayerHasAura(aura), "aura applying"))
+                {
+                    if (LokiPoe.Me.IsDead) return;
+                    GlobalLog.Warn($"[CastAuraTask] Failed to apply aura \"{name}\".");
+                    GlobalLog.Warn($"[CastAuraTask] Pls make sure you can cast this aura (you have ennoght mana).");
+                    GlobalLog.Warn($"[CastAuraTask] Also make sure you have blacklisted the auras you dont want to use (Settings-Content-SkillBlacklist).");
+                    GlobalLog.Warn($"[CastAuraTask] This error Usually indicate that you have more Auras, slotted, than you can substain with your mana.");
+                    GlobalLog.Warn($"[CastAuraTask] The aura \"{name}\" will not be blacklisted to allow the bot to continue, the aura will be recasted next time you stop/start the bot.");
+                    _temporaryBlacklistedAuras.Add(id);
+                }
+            }
+            
             await Wait.SleepSafe(100);
         }
 
@@ -118,9 +136,7 @@ namespace FollowBot
                 if (FollowBotSettings.Instance.IgnoreHiddenAuras && !aura.IsOnSkillBar)
                     continue;
 
-                if (PlayerHasAura(aura.Name))
-                    continue;
-                if (PlayerHasAura(aura.Id))
+                if (PlayerHasAura(aura))
                     continue;
 
                 auras.Add(aura);
@@ -132,19 +148,36 @@ namespace FollowBot
         {
             get
             {
-                return SkillBar.Skills.Where(skill => AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse);
+                return SkillBar.Skills.Where(skill => !skill.IsVaalSkill && (AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse));
             }
         }
         private static IEnumerable<Skill> AllWhitelistedAuras
         {
             get
             {
-                return SkillBar.Skills.Where(skill => _temporaryBlacklistedAuras.All(x => x != skill.Id) &&
+                return SkillBar.Skills.Where(skill => !skill.IsVaalSkill &&
+                    _temporaryBlacklistedAuras.All(x => x != skill.Id) &&
                 !SkillBlacklist.IsBlacklisted(skill) &&
                 (AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse));
             }
         }
 
+        private static bool PlayerHasAura(Skill aura)
+        {
+            //BloodAndSand Hack
+            if (aura.InternalId == "blood_sand_armour")
+            {
+                if (FollowBotSettings.Instance.BloorOrSand == FollowBotSettings.BloodAndSand.Blood)
+                    return LokiPoe.Me.Auras.Any(x => x.InternalName == "blood_armour");
+                if (FollowBotSettings.Instance.BloorOrSand == FollowBotSettings.BloodAndSand.Sand)
+                    return LokiPoe.Me.Auras.Any(x => x.InternalName == "sand_armour");
+            }
+            if (PlayerHasAura(aura.Name))
+                return true;
+            if (PlayerHasAura(aura.Id))
+                return true;
+            return false;
+        }
         private static bool PlayerHasAura(string auraName)
         {
             return LokiPoe.Me.Auras.Any(a => (a.Name.EqualsIgnorecase(auraName) || a.Name.EqualsIgnorecase(auraName + " aura")) && a.CasterId == LokiPoe.Me.Id);            
@@ -186,7 +219,8 @@ namespace FollowBot
             "Herald of Purity",
 
             // the rest
-            "Arctic Armour"
+            "Arctic Armour",
+            "Flesh and Stone",
         };
         private static readonly HashSet<string> AuraInternalId = new HashSet<string>
         {
@@ -224,6 +258,7 @@ namespace FollowBot
             "tempest_shield",
             "skitterbots",
             "petrified_blood",
+            "blood_sand_armour",
 
 
         };
