@@ -175,7 +175,7 @@ namespace FollowBot.Class
             GlobalLog.Warn($"Recieved Message: {newmessage.Message}, Command: {command}");
 
             if (command == FollowBotSettings.Instance.OpenTownPortalChatCommand)
-                TravelToPartyZoneTask.ShouldOpenPortal = true;
+                DefenseAndFlaskTask.ShouldOpenPortal = true;
 
             if (command == FollowBotSettings.Instance.TeleportToLeaderChatCommand)
                 DefenseAndFlaskTask.ShouldTeleport = true;
