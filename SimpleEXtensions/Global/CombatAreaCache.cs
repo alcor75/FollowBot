@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Media;
+using System.Threading;
 using DreamPoeBot.Loki.Bot;
 using DreamPoeBot.Loki.Controllers;
 using DreamPoeBot.Loki.Game;
@@ -89,6 +90,16 @@ namespace FollowBot.SimpleEXtensions.Global
 
         private CombatAreaCache(uint hash)
         {
+            Stopwatch sw = Stopwatch.StartNew();
+            while (World.CurrentArea == null)
+            {
+                if (sw.ElapsedMilliseconds > 5000)
+                {
+                    GlobalLog.Error($"[CombatAreaCache] Failed to Creating cache for area hash: {hash}, World.CurrentArea == null for 5 seconds.");
+                    return;
+                }
+                Thread.Sleep(10);
+            }
             GlobalLog.Info($"[CombatAreaCache] Creating cache for \"{World.CurrentArea.Name}\" (hash: {hash})");
             Hash = hash;
             WorldArea = World.CurrentArea;

@@ -73,7 +73,7 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
 
             if (pos.Distance > FollowBotSettings.Instance.MaxLootDistance)
             {
-                GlobalLog.Warn($"[LootItemTask] {pos} is not to far away. [{pos.Distance}/FollowBotSettings.Instance.MaxLootDistance]");
+                GlobalLog.Warn($"[LootItemTask] {pos} is now to far away. [{pos.Distance}/{FollowBotSettings.Instance.MaxLootDistance}]");
 				_item.Ignored = true;
                 _item = null;
                 return true;

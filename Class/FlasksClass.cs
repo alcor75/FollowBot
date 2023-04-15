@@ -14,6 +14,7 @@ namespace FollowBot.Class
         private bool _useMana;
         private int _threshold;
         private int _cooldown;
+        private bool _ignoreEffect;
 
         public FlasksClass()
         {
@@ -82,6 +83,16 @@ namespace FollowBot.Class
             {
                 _cooldown = value;
                 NotifyPropertyChanged(nameof(Cooldown));
+            }
+        }
+
+        public bool IgnoreEffect
+        {
+            get { return _ignoreEffect;}
+            set
+            {
+                _ignoreEffect = value;
+                NotifyPropertyChanged(nameof(IgnoreEffect));
             }
         }
 

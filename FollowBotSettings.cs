@@ -462,6 +462,7 @@ namespace FollowBot
         private string _startSentinelChatCommand;
         private string _stopAutoTeleportChatCommand;
         private string _startAutoTeleportChatCommand;
+        private string _openTownPortalChatCommand;
 
         [DefaultValue("Tele")]
         public string TeleportToLeaderChatCommand
@@ -617,11 +618,22 @@ namespace FollowBot
             }
         }
 
+        [DefaultValue("OpenP")]
+        public string OpenTownPortalChatCommand
+        {
+            get { return _openTownPortalChatCommand; }
+            set
+            {
+                _openTownPortalChatCommand = value;
+                NotifyPropertyChanged(() => OpenTownPortalChatCommand);
+            }
+        }
+
         #endregion
 
-        #region Overlay
+#region Overlay
 
-        private bool _enableOverlay;
+private bool _enableOverlay;
         private bool _drawInBackground;
         private bool _drawMobs;
         private bool _drawCorpses;

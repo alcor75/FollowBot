@@ -45,21 +45,21 @@ namespace FollowBot
             }
 
             await Coroutines.CloseBlockingWindows();
-
+            
             var leader = LokiPoe.InstanceInfo.PartyMembers.FirstOrDefault(x => x.MemberStatus == PartyStatus.PartyLeader);
             if (leader == null) return false;
             var leadername = leader.PlayerEntry.Name;
-            if (LokiPoe.InGameState.PartyHud.IsInSameZone(leadername))
+            if (LokiPoe.InGameState.PartyHud.IsInSameZone(leadername) || FollowBotSettings.Instance.DontPortOutofMap)
             {
                 _zoneCheckRetry = 0;
                 return false;
             }
             else
             {
-                if (LokiPoe.CurrentWorldArea.IsMap || LokiPoe.CurrentWorldArea.Id.Contains("AfflictionTown") || LokiPoe.CurrentWorldArea.Id.Contains("Delve_"))
-                {
-                    if (FollowBotSettings.Instance.DontPortOutofMap) return false;
-                }
+                //if (LokiPoe.CurrentWorldArea.IsMap || LokiPoe.CurrentWorldArea.Id.Contains("AfflictionTown") || LokiPoe.CurrentWorldArea.Id.Contains("Delve_"))
+                //{
+                //    if (FollowBotSettings.Instance.DontPortOutofMap) return false;
+                //}
 
                 _zoneCheckRetry ++;
                 if (_zoneCheckRetry < 3)
@@ -75,9 +75,9 @@ namespace FollowBot
             if (delveportal != null)
             {
                 Log.DebugFormat("[{0}] Found walkable delve portal.", Name);
-                if (LokiPoe.Me.Position.Distance(delveportal.Position) > 20)
+                if (LokiPoe.Me.Position.Distance(delveportal.Position) > 15)
                 {
-                    var walkablePosition = ExilePather.FastWalkablePositionFor(delveportal, 20);
+                    var walkablePosition = ExilePather.FastWalkablePositionFor(delveportal, 13);
 
                     // Cast Phase run if we have it.
                     FollowBot.PhaseRun();

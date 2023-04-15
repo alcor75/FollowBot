@@ -130,11 +130,20 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="IgnoreEffect">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <CheckBox HorizontalAlignment="Center" IsChecked="{Binding Path=IgnoreEffect, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Ignore the Effect duration when deciding if to use this flask, use it in conjunction with Cooldown to trigger this flask each x ms." Width="Auto"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Cooldown (Ms)" >
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <WrapPanel>
-                                        <Slider Name="SlCooldown" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=Cooldown, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="10000" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="Cooldown time for this flask. The flask will be used once every x milliseconds as per delay configuration."/>
+                                        <Slider Name="SlCooldown" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=Cooldown, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="15000" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="Cooldown time for this flask. The flask will be used once every x milliseconds as per delay configuration, Pls note, if the option IgnoreEffect is not selected, the flask will newer be used till the flask effect wear off, regardless for the Cooldown configuration.."/>
                                         <TextBox Name="TbCooldown" Text="{Binding ElementName=SlCooldown, Path=Value}" MinWidth="40"  HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center"/>
                                     </WrapPanel>
                                 </DataTemplate>

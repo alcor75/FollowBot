@@ -1,10 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DreamPoeBot.Common;
 using DreamPoeBot.Loki.Bot;
-using DreamPoeBot.Loki.Components;
 using DreamPoeBot.Loki.Game;
 using DreamPoeBot.Loki.Game.Objects;
 using FollowBot.SimpleEXtensions.Positions;
