@@ -21,7 +21,7 @@ namespace FollowBot.Class
             
         }
 
-        public FlasksClass(bool enabled, int slot, bool useEs, bool useMana, int threshold, int cooldown)
+        public FlasksClass(bool enabled, int slot, bool useEs, bool useMana, int threshold, int cooldown, bool ignoreEffect)
         {
             Enabled = enabled;
             Slot = slot;
@@ -29,6 +29,7 @@ namespace FollowBot.Class
             UseMana = useMana;
             Threshold = threshold;
             Cooldown = cooldown;
+            IgnoreEffect = ignoreEffect;
         }
 
         public int Slot

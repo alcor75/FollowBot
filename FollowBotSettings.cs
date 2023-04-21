@@ -194,11 +194,11 @@ namespace FollowBot
         {
             ObservableCollection<FlasksClass> flasks = new ObservableCollection<FlasksClass>();
 
-            flasks.Add(new FlasksClass(false, 1, false, false, 0, 0));
-            flasks.Add(new FlasksClass(false, 2, false, false, 0, 0));
-            flasks.Add(new FlasksClass(false, 3, false, false, 0, 0));
-            flasks.Add(new FlasksClass(false, 4, false, false, 0, 0));
-            flasks.Add(new FlasksClass(false, 5, false, false, 0, 0));
+            flasks.Add(new FlasksClass(false, 1, false, false, 0, 0, false));
+            flasks.Add(new FlasksClass(false, 2, false, false, 0, 0, false));
+            flasks.Add(new FlasksClass(false, 3, false, false, 0, 0, false));
+            flasks.Add(new FlasksClass(false, 4, false, false, 0, 0, false));
+            flasks.Add(new FlasksClass(false, 5, false, false, 0, 0, false));
             return flasks;
         }
 

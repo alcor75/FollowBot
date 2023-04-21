@@ -49,7 +49,7 @@ namespace FollowBot
             var leader = LokiPoe.InstanceInfo.PartyMembers.FirstOrDefault(x => x.MemberStatus == PartyStatus.PartyLeader);
             if (leader == null) return false;
             var leadername = leader.PlayerEntry.Name;
-            if (LokiPoe.InGameState.PartyHud.IsInSameZone(leadername) || FollowBotSettings.Instance.DontPortOutofMap)
+            if (LokiPoe.InGameState.PartyHud.IsInSameZone(leadername))
             {
                 _zoneCheckRetry = 0;
                 return false;
@@ -69,8 +69,10 @@ namespace FollowBot
                     return true;
                 }
             }
-
-            //First check for Delve portals:
+            //First check the DontPortOutofMap
+            var curZone = World.CurrentArea;
+            if (!curZone.IsTown && !curZone.IsHideoutArea && FollowBotSettings.Instance.DontPortOutofMap) return false;
+            //Then check for Delve portals:
             var delveportal = LokiPoe.ObjectManager.GetObjectsByType<AreaTransition>().FirstOrDefault(x => x.Name == "Azurite Mine" && (x.Metadata == "Metadata/MiscellaneousObject/PortalTransition" || x.Metadata == "Metadata/MiscellaneousObjects/PortalTransition"));
             if (delveportal != null)
             {

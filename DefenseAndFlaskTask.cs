@@ -151,8 +151,8 @@ namespace FollowBot
                 if (postUseDelay < flask.Cooldown) continue;
                 var thisflask = FlaskHud.InventoryControl.Inventory.Items.FirstOrDefault(x => x.LocationTopLeft.X == flask.Slot - 1);
                 if (thisflask == null) continue;
-                if (thisflask.Name == Class.FlaskNames.Quicksilver && LokiPoe.Me.HasAura(QsilverEffect)) continue;
-                if (!thisflask.Components.FlaskComponent.IsInstantRecovery && flask.PostUseDelay.ElapsedMilliseconds < thisflask.Components.FlaskComponent.RecoveryTime.TotalMilliseconds) continue;
+                if (thisflask.Name == Class.FlaskNames.Quicksilver && LokiPoe.Me.HasAura(QsilverEffect) && !flask.IgnoreEffect) continue;
+                if (!flask.IgnoreEffect && !thisflask.Components.FlaskComponent.IsInstantRecovery && flask.PostUseDelay.ElapsedMilliseconds < thisflask.Components.FlaskComponent.RecoveryTime.TotalMilliseconds) continue;
                 if (!flask.IgnoreEffect && HasFlaskEffect(thisflask)) continue;
                 var threshold = flask.UseEs ? esPct : flask.UseMana ? manaPct : hpPct;
                 if (threshold < flask.Threshold)
@@ -193,7 +193,9 @@ namespace FollowBot
         private static void CastDefensiveSkill(DefensiveSkillsClass skillClass)
         {
             if (skillClass == null) return;
-            Skill skill = LokiPoe.InGameState.SkillBarHud.Skills.FirstOrDefault(s => s.Name == skillClass.Name);
+            var skills = LokiPoe.InGameState.SkillBarHud.Skills;
+            if (skills == null) return;
+            Skill skill = skills.FirstOrDefault(s => s.Name == skillClass.Name);
             if (skill != null && skill.CanUse())
             {
                 if (skillClass.CastOnLeader)
