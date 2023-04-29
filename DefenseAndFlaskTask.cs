@@ -218,10 +218,10 @@ namespace FollowBot
         private static bool UseFlask(Item thisflask, int slot)
         {
             if (!thisflask.CanUse) return false;
-            if (thisflask.Name == FlaskNames.Quicksilver)
-            {
-                if (LokiPoe.Me.HasAura(QsilverEffect)) return false;
-            }
+            //if (thisflask.Name == FlaskNames.Quicksilver)
+            //{
+            //    if (LokiPoe.Me.HasAura(QsilverEffect)) return false;
+            //}
             //string name = thisflask.ProperName();
             //string effect = Flasks.GetEffect(name);
             //if (effect != null)

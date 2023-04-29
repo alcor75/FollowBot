@@ -48,10 +48,70 @@ namespace FollowBot
         private bool _useStalkerSentinel;
         private bool _dontPortOutofMap;
         private bool _shouldFollow = true;
+
+        #endregion
+
+        #region Aureas
+        private bool _enableAspectsOfTheAvian;
+        private bool _enableAspectsOfTheCat;
+        private bool _enableAspectsOfTheCrab;
+        private bool _enableAspectsOfTheSpider;
         private BloodAndSand _bloodOrSand;
         #endregion
 
         #region Auras
+        [DefaultValue(false)]
+        public bool EnableAspectsOfTheAvian
+        {
+            get
+            {
+                return _enableAspectsOfTheAvian;
+            }
+            set
+            {
+                _enableAspectsOfTheAvian = value;
+                NotifyPropertyChanged(() => EnableAspectsOfTheAvian);
+            }
+        }
+        [DefaultValue(false)]
+        public bool EnableAspectsOfTheCat
+        {
+            get
+            {
+                return _enableAspectsOfTheCat;
+            }
+            set
+            {
+                _enableAspectsOfTheCat = value;
+                NotifyPropertyChanged(() => EnableAspectsOfTheCat);
+            }
+        }
+        [DefaultValue(false)]
+        public bool EnableAspectsOfTheCrab
+        {
+            get
+            {
+                return _enableAspectsOfTheCrab;
+            }
+            set
+            {
+                _enableAspectsOfTheCrab = value;
+                NotifyPropertyChanged(() => EnableAspectsOfTheCrab);
+            }
+        }
+        [DefaultValue(false)]
+        public bool EnableAspectsOfTheSpider
+        {
+            get
+            {
+                return _enableAspectsOfTheSpider;
+            }
+            set
+            {
+                _enableAspectsOfTheSpider = value;
+                NotifyPropertyChanged(() => EnableAspectsOfTheSpider);
+            }
+        }
 
         [DefaultValue(BloodAndSand.Sand)]
         public BloodAndSand BloorOrSand

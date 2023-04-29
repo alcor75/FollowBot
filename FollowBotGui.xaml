@@ -71,10 +71,20 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Content="The bot will try to cast all available Auras and AurificedCurses automatically."/>
-                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Content="If you use the Flesh and Stone skill, use this button to select your prefered stance."/>
-                    <Button Grid.Row="2" Grid.Column="0" FontWeight="Bold" Content="Change Stance" Click="ChangeStance_OnClick" Margin="5,1,25,1" ></Button>
-                    <Border BorderThickness="1" BorderBrush="White" CornerRadius="10" Grid.Row="2" Grid.Column="1">
+                    <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="2" Margin="5,5,10,0" Header="Aspects">
+                        <StackPanel>
+                            <CheckBox Content="Use Aspect of the Avian" Margin="10,0,10,0" IsChecked="{Binding Path=EnableAspectsOfTheAvian, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="Should use Aspect of the Avian"></CheckBox>
+                            <CheckBox Content="Use Aspect of the Cat" Margin="10,0,10,0" IsChecked="{Binding Path=EnableAspectsOfTheCat, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="Should use Aspect of the Cat"></CheckBox>
+                            <CheckBox Content="Use Aspect of the Crab" Margin="10,0,10,0" IsChecked="{Binding Path=EnableAspectsOfTheCrab, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="Should use Aspect of the Crab"></CheckBox>
+                            <CheckBox Content="Use Aspect of the Spider" Margin="10,0,10,0" IsChecked="{Binding Path=EnableAspectsOfTheSpider, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="Should use Aspect of the Spider"></CheckBox>
+                        </StackPanel>
+                        
+                    </GroupBox>
+                    
+                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Content="The bot will try to cast all available Auras and AurificedCurses automatically."/>
+                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Content="If you use the Flesh and Stone skill, use this button to select your prefered stance."/>
+                    <Button Grid.Row="3" Grid.Column="0" FontWeight="Bold" Content="Change Stance" Click="ChangeStance_OnClick" Margin="5,1,25,1" ></Button>
+                    <Border BorderThickness="1" BorderBrush="White" CornerRadius="10" Grid.Row="3" Grid.Column="1">
                         <Label FontWeight="Bold" Content="{Binding Path=BloorOrSand}" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                     </Border>
                     

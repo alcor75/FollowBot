@@ -148,7 +148,7 @@ namespace FollowBot
         {
             get
             {
-                return SkillBar.Skills.Where(skill => !skill.IsVaalSkill && (AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse));
+                return SkillBar.Skills.Where(skill => !skill.IsVaalSkill && (AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse || AspectsNames.Contains(skill.Name)));
             }
         }
         private static IEnumerable<Skill> AllWhitelistedAuras
@@ -158,7 +158,12 @@ namespace FollowBot
                 return SkillBar.Skills.Where(skill => !skill.IsVaalSkill &&
                     _temporaryBlacklistedAuras.All(x => x != skill.Id) &&
                 !SkillBlacklist.IsBlacklisted(skill) &&
-                (AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse));
+                (AuraNames.Contains(skill.Name) || AuraInternalId.Contains(skill.InternalId) || skill.IsAurifiedCurse || 
+                 (FollowBotSettings.Instance.EnableAspectsOfTheAvian && skill.Name == "Aspect of the Avian") ||
+                 (FollowBotSettings.Instance.EnableAspectsOfTheCat && skill.Name == "Aspect of the Cat") ||
+                 (FollowBotSettings.Instance.EnableAspectsOfTheCrab && skill.Name == "Aspect of the Crab") ||
+                 (FollowBotSettings.Instance.EnableAspectsOfTheSpider && skill.Name == "Aspect of the Spider")
+                ));
             }
         }
 
@@ -221,6 +226,15 @@ namespace FollowBot
             // the rest
             "Arctic Armour",
             "Flesh and Stone",
+            "Envy",
+        };
+        private static readonly HashSet<string> AspectsNames = new HashSet<string>
+        {
+            // aspects
+            "Aspect of the Avian",
+            "Aspect of the Cat",
+            "Aspect of the Crab",
+            "Aspect of the Spider"
         };
         private static readonly HashSet<string> AuraInternalId = new HashSet<string>
         {
@@ -259,6 +273,7 @@ namespace FollowBot
             "skitterbots",
             "petrified_blood",
             "blood_sand_armour",
+            "envy",
 
 
         };
