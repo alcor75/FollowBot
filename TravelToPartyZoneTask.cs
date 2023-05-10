@@ -125,7 +125,7 @@ namespace FollowBot
                 return true;
             }
 
-            if (leader.PlayerEntry.Area.IsMap || leader.PlayerEntry.Area.IsTempleOfAtzoatl)
+            if (leader.PlayerEntry.Area.IsMap || leader.PlayerEntry.Area.IsTempleOfAtzoatl || leader.PlayerEntry.Area.Id.Contains("Expedition"))
             {
                 if (!await TakePortal())
                     await Coroutines.ReactionWait();
