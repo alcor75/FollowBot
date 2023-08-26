@@ -32,6 +32,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <Grid.ColumnDefinitions>
@@ -49,6 +50,13 @@
                             <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Path=MaxLootDistance, Mode=TwoWay}" MinWidth="25" MaxWidth="50" VerticalAlignment="Center" ToolTip="Max distance from the leader, the follower is allowed to move to loot items. All Items above this distance, will be logged and ignored."/>
                             <CheckBox Grid.Row="2" Grid.Column="0" Content="Use Stalker Sentinel" Margin="10,0,10,0" IsChecked="{Binding Path=UseStalkerSentinel, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="Use the Stalker Sentinel if equipped and have charged."/>
                             <CheckBox Grid.Row="3" Grid.Column="0" Content="Don't Port Out of Map" Margin="10,0,10,0" IsChecked="{Binding Path=DontPortOutofMap, Mode=TwoWay}" VerticalAlignment="Center" ToolTip="If Enabled, the follower will not try to exit a map if the Leader die or leave the area, you will need to use chat command to leave the area."/>
+                            <WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+                                <Label Content="Teleport Out delay: " ToolTip="If the Leader Leave the zone for some reason, the bot will wait this numbr of seconds before to leave the map."/>
+                                <Slider Name="SlPortOutDelay" Minimum="0" Margin="0,5,0,0" Width="160" Value="{Binding Path=PortOutThreshold, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1" Maximum="100" AutoToolTipPrecision="1" VerticalAlignment="Center" ToolTip="If the Leader Leave the zone for some reason, the bot will wait this numbr of seconds before to leave the map."/>
+                                <TextBox Name="TbPortOutDelay" Text="{Binding ElementName=SlPortOutDelay, Path=Value}" Width="40" HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center" ToolTip="If the Leader Leave the zone for some reason, the bot will wait this numbr of seconds before to leave the map."/>
+                                <Label Content="Seconds." ToolTip="If the Leader Leave the zone for some reason, the bot will wait this numbr of seconds before to leave the map."/>
+                            </WrapPanel>
+
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
@@ -91,7 +99,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Flasks" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <DataGrid CanUserSortColumns="False" ItemsSource="{Binding Path=Flasks}" AutoGenerateColumns="False" AllowDrop="False" CanUserAddRows="False" VerticalAlignment="Top" Margin="0,5,0,0">
+                <DataGrid CanUserSortColumns="False" ItemsSource="{Binding Path=Flasks, Mode=TwoWay}" AutoGenerateColumns="False" AllowDrop="False" CanUserAddRows="False" VerticalAlignment="Top" Margin="0,5,0,0">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Enabled">
                             <DataGridTemplateColumn.CellTemplate>
@@ -164,7 +172,7 @@
             </TabItem>
             <TabItem Header="Defensive Skills" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-                    <DataGrid CanUserSortColumns="False" ItemsSource="{Binding Path=DefensiveSkills}" AutoGenerateColumns="False" AllowDrop="False" VerticalAlignment="Top" Margin="0,5,0,0">
+                    <DataGrid CanUserSortColumns="False" ItemsSource="{Binding Path=DefensiveSkills, Mode=TwoWay}" AutoGenerateColumns="False" AllowDrop="False" VerticalAlignment="Top" Margin="0,5,0,0">
                         <DataGrid.Columns>
                             <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Path=Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" ></DataGridCheckBoxColumn>
                             <DataGridTextColumn Header="Skill Name" Binding="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto"></DataGridTextColumn>
@@ -192,7 +200,17 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridCheckBoxColumn Header="CastOnLeader" Binding="{Binding Path=CastOnLeader, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto"></DataGridCheckBoxColumn>
+                            <DataGridCheckBoxColumn Header="CastOnParty" Binding="{Binding Path=CastOnLeader, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto"></DataGridCheckBoxColumn>
+
+                            <DataGridTemplateColumn Header="Link Whitelist">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <WrapPanel>
+                                            <TextBox Name="linkWhitelist" Text="{Binding Path=LinkWhitelist, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="100" MaxWidth="200" Width="auto" HorizontalAlignment="Left"  Margin="0,5,0,0" VerticalAlignment="Center" ToolTip="List of names, coma separated, of player that will recieve the Link cast. Ex: name1,name2,name3. PLS NOTE: if this field is empty, the link skill will be used on leader only as usual."/>
+                                        </WrapPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             
                             <DataGridTemplateColumn Header="Remove">
                                 <DataGridTemplateColumn.CellTemplate>

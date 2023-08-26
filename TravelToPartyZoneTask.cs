@@ -21,6 +21,7 @@ namespace FollowBot
         private bool _enabled = true;
         private Stopwatch _portalRequestStopwatch = Stopwatch.StartNew();
         private static int _zoneCheckRetry = 0;
+        private Stopwatch _portOutStopwatch = new Stopwatch();
 
         public string Name { get { return "TravelToPartyZone"; } }
         public string Description { get { return "This task will travel to party grind zone."; } }
@@ -29,6 +30,7 @@ namespace FollowBot
         
         public void Start()
         {
+            _portOutStopwatch.Reset();
         }
         public void Stop()
         {
@@ -52,6 +54,7 @@ namespace FollowBot
             if (LokiPoe.InGameState.PartyHud.IsInSameZone(leadername))
             {
                 _zoneCheckRetry = 0;
+                _portOutStopwatch.Reset();
                 return false;
             }
             else
@@ -200,7 +203,30 @@ namespace FollowBot
                 return false;
             }
 
-            await PartyHelper.FastGotoPartyZone(leadername);
+            if (curZone.IsCombatArea && FollowBotSettings.Instance.PortOutThreshold > 0)
+            {
+                if (_portOutStopwatch.IsRunning && _portalRequestStopwatch.ElapsedMilliseconds >= (FollowBotSettings.Instance.PortOutThreshold * 1000))
+                {
+                    _portOutStopwatch.Reset();
+                    GlobalLog.Warn($"[TravelToPartyZoneTask] {FollowBotSettings.Instance.PortOutThreshold} seconds elapsed and Party leader is in still a diffrerent zone porting!.");
+                    await PartyHelper.FastGotoPartyZone(leadername);                    
+                    return true;
+                }
+                else if (!_portOutStopwatch.IsRunning)
+                {
+                    GlobalLog.Warn($"[TravelToPartyZoneTask] Party leader is in a diffrerent zone waiting {FollowBotSettings.Instance.PortOutThreshold} seconds to see if it come back.");
+                    _portOutStopwatch.Start();
+                    return true;
+                }
+                else
+                {
+                    await Coroutines.LatencyWait();
+                    return true;
+                }
+            }
+            else
+                await PartyHelper.FastGotoPartyZone(leadername);
+
             return true;
         }
 
@@ -233,6 +259,7 @@ namespace FollowBot
             if (message.Id == Events.Messages.AreaChanged)
             {
                 _zoneCheckRetry = 0;
+                _portOutStopwatch.Reset();
                 return MessageResult.Processed;
             }
             if (message.Id == "Enable")

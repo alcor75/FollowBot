@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DreamPoeBot.Loki.Bot;
 using DreamPoeBot.Loki.Game;
+using DreamPoeBot.Loki.Game.NativeWrappers;
 using DreamPoeBot.Loki.Game.Objects;
 using DreamPoeBot.Loki.RemoteMemoryObjects;
 using FollowBot.Class;
@@ -65,6 +66,7 @@ namespace FollowBot
             [FlaskNames.DoedreElixir] = string.Empty,
             [FlaskNames.WrithingJar] = string.Empty,
         };
+        private static readonly Dictionary<string, int> LinkRotationDictionary = new Dictionary<string, int>();
 
         public static class FlaskNames
         {
@@ -200,10 +202,10 @@ namespace FollowBot
             {
                 if (skillClass.CastOnLeader)
                 {
-                    var leader = FollowBot.Leader;
+                    var leader = GetNextOnRotation(skillClass.LinkWhitelist);// FollowBot.Leader;
                     if (leader != null && leader.Distance < 50)
                     {
-                        LokiPoe.InGameState.SkillBarHud.UseOn(skill.Slot, false, FollowBot.Leader, false);
+                        LokiPoe.InGameState.SkillBarHud.UseAt(skill.Slot, false, leader.Position, false);
                         skillClass.Casted();
                     }
                 }
@@ -233,10 +235,71 @@ namespace FollowBot
             return true;
         }
 
+        private static Player GetNextOnRotation(string linkWhitelist)
+        {
+            List<PartyMember> party;
+            if (string.IsNullOrEmpty(linkWhitelist))
+            {
+                return FollowBot.Leader;
+            }
+            else
+            {
+                var listSplit = linkWhitelist.Split(',');
+                if (listSplit.Length < 1) 
+                {
+                    GlobalLog.Error("--------------------------------------------------------------------------------------------------------------------------------");
+                    GlobalLog.Error(" ");
+                    GlobalLog.Error("[DefenseAndFlaskTask] CastOnParty is selected, but the LinkWhitelist have some problems, pls check the Defensive skill setting.!");
+                    GlobalLog.Error(" ");
+                    GlobalLog.Error("--------------------------------------------------------------------------------------------------------------------------------");
+                }
+                var partyMembers = LokiPoe.InstanceInfo.PartyMembers;
+                party = partyMembers.Where(x => x != null && x.PlayerEntry != null && listSplit.Contains(x.PlayerEntry.Name) && x.PlayerEntry.Name != LokiPoe.Me.Name && LokiPoe.InGameState.PartyHud.IsInSameZone(x.PlayerEntry.Name)).ToList();
+                if (party.Count < 1)
+                {
+                    GlobalLog.Error("--------------------------------------------------------------------------------------------------------------------------------");
+                    GlobalLog.Error(" ");
+                    GlobalLog.Error($"[DefenseAndFlaskTask] CastOnParty is selected, but the LinkWhitelist have some problems (the name in the LinkWithelist do not match the party names [partyMembers = {partyMembers.Count}]), pls check the Defensive skill setting.!");
+                    GlobalLog.Error(" ");
+                    GlobalLog.Error("--------------------------------------------------------------------------------------------------------------------------------");
+                }
+                foreach (var partyMember in partyMembers)
+                {
+                    var name = partyMember?.PlayerEntry?.Name;
+                    if (string.IsNullOrEmpty(name)) continue;
+                    if (!LokiPoe.InGameState.PartyHud.IsInSameZone(name)) continue;                   
+                    if (!LinkRotationDictionary.ContainsKey(name))
+                    {
+                        LinkRotationDictionary.Add(name, 0);
+                    }                  
+                }
+                var nam = "";
+                int weight = int.MaxValue;
+                var keys = LinkRotationDictionary.Keys;
+                foreach (var key in keys)
+                {
+                    if (LinkRotationDictionary[key] < weight) 
+                    { 
+                        weight = LinkRotationDictionary[key]; 
+                        nam = key;
+                    }
+                }
+                //var selected = LinkRotationDictionary.OrderBy(x => x.Value).First();
+                LinkRotationDictionary[nam]++;
+                var p = LokiPoe.ObjectManager.GetObjectsByType<Player>().FirstOrDefault(x => x.Name == nam);
+                return p;
+            }
+
+        }
+
         #region Unused interface methods
 
         public MessageResult Message(Message message)
         {
+            if (message.Id == Events.Messages.AreaChanged)
+            {
+                LinkRotationDictionary.Clear();
+            }
             return MessageResult.Unprocessed;
         }
 

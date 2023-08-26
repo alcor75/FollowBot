@@ -41,6 +41,7 @@ namespace FollowBot
         private int _maxfollowDistance;
         private int _maxCombatDistance;
         private int _maxLootDistance;
+        public int _portOutThreshold;
 
         #region Party Role
         private bool _shouldKill;
@@ -178,6 +179,18 @@ namespace FollowBot
             { _maxLootDistance = value; NotifyPropertyChanged(() => MaxLootDistance); }
         }
 
+        
+        [DefaultValue(0)]
+        public int PortOutThreshold
+        {
+            get { return _portOutThreshold; }
+            set
+            {
+                _portOutThreshold = value;
+                NotifyPropertyChanged(() => PortOutThreshold);
+            }
+        }
+
         #region Party Role
 
         [DefaultValue(true)]
@@ -244,10 +257,10 @@ namespace FollowBot
         {
             ObservableCollection<DefensiveSkillsClass> skills = new ObservableCollection<DefensiveSkillsClass>();
 
-            skills.Add(new DefensiveSkillsClass(false, "Vaal Molten Shell", false, 0, 0,false));
-            skills.Add(new DefensiveSkillsClass(false, "Vaal Discipline", false, 0, 0, false));
-            skills.Add(new DefensiveSkillsClass(false, "Molten Shell", false, 0, 0, false));
-            skills.Add(new DefensiveSkillsClass(false, "Steelskin", false, 0, 0, false));
+            skills.Add(new DefensiveSkillsClass(false, "Vaal Molten Shell", false, 0, 0,false, ""));
+            skills.Add(new DefensiveSkillsClass(false, "Vaal Discipline", false, 0, 0, false, ""));
+            skills.Add(new DefensiveSkillsClass(false, "Molten Shell", false, 0, 0, false, ""));
+            skills.Add(new DefensiveSkillsClass(false, "Steelskin", false, 0, 0, false, ""));
             return skills;
         }
         private ObservableCollection<FlasksClass> SetupDefaultFlasks()

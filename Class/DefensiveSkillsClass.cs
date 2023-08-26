@@ -15,6 +15,7 @@ namespace FollowBot.Class
         private int _threshold { get; set; }
         private double _sleepSeconds { get; set; }
         private bool _castOnLeader { get; set; }
+        private string _linkWhitelist { get; set; } = "";
 
         public DefensiveSkillsClass()
         {
@@ -29,6 +30,16 @@ namespace FollowBot.Class
             Threshold = threshold;
             SleepSeconds = sleepSeconds;
             CastOnLeader = castOnLeader;
+        }
+        public DefensiveSkillsClass(bool enabled, string name, bool useEs, int threshold, double sleepSeconds, bool castOnLeader, string linkWhitelist)
+        {
+            Enabled = enabled;
+            Name = name;
+            UseEs = useEs;
+            Threshold = threshold;
+            SleepSeconds = sleepSeconds;
+            CastOnLeader = castOnLeader;
+            LinkWhitelist = linkWhitelist;
         }
         public string Name
         {
@@ -83,13 +94,22 @@ namespace FollowBot.Class
                 _castOnLeader = value;
                 NotifyPropertyChanged(nameof(CastOnLeader));
             }
-        }
+        }        
 
         public bool IsReadyToCast
         {
             get
             {
                 return  delaySw.ElapsedMilliseconds > SleepSeconds * 1000;
+            }
+        }
+        public string LinkWhitelist
+        {
+            get { return _linkWhitelist; }
+            set
+            {
+                _linkWhitelist = value;
+                NotifyPropertyChanged(nameof(LinkWhitelist));
             }
         }
         public void Casted()
