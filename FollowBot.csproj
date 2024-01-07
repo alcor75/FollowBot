@@ -32,8 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DreamPoeBot">
-      <HintPath>..\..\..\..\..\..\..\obama\DreamPoeBot.exe</HintPath>
+    <Reference Include="DreamPoeBot, Version=0.3.22.13, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Bot\Exiled New life\BotDevelopment\C++ Asm Test\Experiments\DreamPoeBot - 3-22-00\DreamPoeBot\bin\Debug\DreamPoeBot.exe</HintPath>
     </Reference>
     <Reference Include="GameOverlay">
       <HintPath>..\..\..\..\..\..\DPBTradeBot\GameOverlay.dll</HintPath>

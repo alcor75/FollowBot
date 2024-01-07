@@ -66,9 +66,9 @@ namespace FollowBot.SimpleEXtensions
         }
         public static async Task<bool> ForAreaChange(uint areaHash, int timeout = 60000)
         {
-            if (await For(() => LokiPoe.StateManager.IsAreaLoadingStateActive, "loading screen", 100, 3000))
+            if (await For(() => LokiPoe.StateManager.IsAreaLoadingStateActive, "loading screen", 1, 6000))
             {
-                return await For(() => LokiPoe.IsInGame, "is ingame", 200, timeout);
+                return await For(() => LokiPoe.IsInGame, "is ingame", 100, timeout);
             }
 
             return false;
@@ -76,9 +76,9 @@ namespace FollowBot.SimpleEXtensions
         }
         public static async Task<bool> ForHOChange(int timeout = 60000)
         {
-            if (await For(() => LokiPoe.StateManager.IsAreaLoadingStateActive, "loading screen", 100, 3000))
+            if (await For(() => LokiPoe.StateManager.IsAreaLoadingStateActive, "loading screen", 1, 6000))
             {
-                return await For(() => LokiPoe.IsInGame, "is ingame", 200, timeout);
+                return await For(() => LokiPoe.IsInGame, "is ingame", 100, timeout);
             }
 
             return false;

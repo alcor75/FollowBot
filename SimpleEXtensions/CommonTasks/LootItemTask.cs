@@ -12,6 +12,7 @@ using DreamPoeBot.Loki.Controllers;
 using FollowBot.SimpleEXtensions.CachedObjects;
 using FollowBot.SimpleEXtensions.Global;
 using FollowBot.SimpleEXtensions.Positions;
+using System.Diagnostics;
 
 namespace FollowBot.SimpleEXtensions.CommonTasks
 {
@@ -19,6 +20,7 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
 	{
 		private const int MaxItemPickupAttempts = 10;
 		private static readonly Interval LogInterval = new Interval(1000);
+		Stopwatch _logSW = Stopwatch.StartNew();
 
         private CachedWorldItem _item;
 
@@ -50,7 +52,11 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
             {
                 if (itToFarCount > 0)
                 {
-                    GlobalLog.Warn($"[LootItemTask] {itToFarCount} will be ignored B/C they are to far away. (Increase MaxLootDistance or bring the Leader closerto them.)");
+					if (_logSW.ElapsedMilliseconds > 5000)
+					{
+						GlobalLog.Warn($"[LootItemTask] {itToFarCount} will be ignored B/C they are to far away. (Increase MaxLootDistance or bring the Leader closerto them.)");
+						_logSW.Restart();
+					}
                 }
 				return false;
             }
@@ -106,11 +112,13 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
 				}
 				return true;
 			}
-			WorldItem itemObj = _item.Object;
+			PlayerMoverManager.MoveTowards(LokiPoe.MyPosition);
+
+            WorldItem itemObj = _item.Object;
 			if (itemObj == null)
 			{
-				items.Remove(_item);
-				_item = null;
+                CombatAreaCache.Current.RemoveItemFromCache(_item);
+                _item = null;
 				return true;
 			}
 
@@ -121,6 +129,7 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
 				{
 					string errorName = "[LootItemTask] Fail to pick up the Mirror of Kalandra!!!!!!";
 					GlobalLog.Error(errorName);
+                    _item = null;
                 }
 				else
 				{
@@ -157,9 +166,9 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
             if (await FastInteraction(itemObj))
             {
                 //await Coroutines.LatencyWait();
-                if (await Wait.For(() => _item.Object == null, "item pick up", 5, timeout))
+                if (await Wait.For(() => itemObj == null, "item pick up", 5, timeout))
                 {
-                    items.Remove(_item);
+                    CombatAreaCache.Current.RemoveItemFromCache(_item);
                     _item = null;
                     GlobalLog.Info($"[Events] Item looted ({cached.Name})");
                     Utility.BroadcastMessage(this, Events.Messages.ItemLootedEvent, cached);
@@ -201,7 +210,7 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
             {
                 point = new Vector2i((int)(label.Coordinate.X + (label.Size.X / 7) * i), (int)(label.Coordinate.Y + (label.Size.Y / 2)));
                 MouseManager.SetMousePosition(point, false);
-                await Wait.SleepSafe(15);
+                await Wait.SleepSafe(10);
 				if (GameController.Instance.Game.IngameState.FrameUnderCursor == item.Entity.Address)
                 {
 					found = true;

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DreamPoeBot.Loki.Bot;
+using DreamPoeBot.Loki.Game;
 
 namespace FollowBot.SimpleEXtensions.CommonTasks
 {
@@ -15,8 +16,20 @@ namespace FollowBot.SimpleEXtensions.CommonTasks
         public async Task<bool> Run()
         {
             if (!FollowBotSettings.Instance.ShouldKill) return false;
-            if (!World.CurrentArea.IsCombatArea)
-                return false;
+            if (!World.CurrentArea.IsCombatArea) return false;
+
+            var leader = FollowBot.Leader;
+
+            if (leader != null)
+            {
+                if (!LokiPoe.InGameState.PartyHud.IsInSameZone(leader.Name))
+                {
+                    if (!TravelToPartyZoneTask.PortOutStopwatch.IsRunning || TravelToPartyZoneTask.PortOutStopwatch.ElapsedMilliseconds > (FollowBotSettings.Instance.PortOutThreshold * 1000))
+                    {
+                        return false;
+                    }
+                }
+            }
 
             var routine = RoutineManager.Current;
 

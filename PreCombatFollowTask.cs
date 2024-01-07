@@ -65,7 +65,7 @@ namespace FollowBot
                 // Cast Phase run if we have it.
                 FollowBot.PhaseRun();
 
-                if (LokiPoe.Me.Position.Distance(pos) < 50)
+                if (ExilePather.PathDistance(LokiPoe.Me.Position, pos) < 50)
                     LokiPoe.InGameState.SkillBarHud.UseAt(FollowBot.LastBoundMoveSkillSlot, false,
                         pos);
                 else

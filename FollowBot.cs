@@ -54,7 +54,7 @@ namespace FollowBot
             get
             {
                 var leaderPartyEntry = _leaderPartyEntry;
-                if (leaderPartyEntry == null || leaderPartyEntry.PlayerEntry == null)
+                if (leaderPartyEntry?.PlayerEntry?.IsOnline != true)
                 {
                     _leader = null;
                     return null;
@@ -75,13 +75,28 @@ namespace FollowBot
 
                 if (_leader == null)
                 {
-                    _leader = LokiPoe.ObjectManager.GetObjectsByType<Player>().FirstOrDefault(x => x.Name == leaderName);
+                    //_leader = LokiPoe.ObjectManager.GetObjectsByType<Player>().FirstOrDefault(x => x.Name == leaderName);
+                    var playersOfClass = LokiPoe.ObjectManager.GetObjectsByMetadatas(PlayerMetadataList).ToList();
+                    var leaderPlayer = playersOfClass.FirstOrDefault(x => x.Name == leaderName);
+                    _leader = leaderPlayer as Player;
+
+                    if (_leader == null)
+                    {
+                        _leader = LokiPoe.ObjectManager.GetObjectsByType<Player>()
+                            .FirstOrDefault(x => x.Name == leaderName);
+                    }
                 }
                 return _leader;
             }
             set => _leader = value;
         }
-
+        public static string[] PlayerMetadataList =
+        {
+            "Metadata/Characters/Dex/Dex", "Metadata/Characters/Int/Int", "Metadata/Characters/Str/Str",
+                            "Metadata/Characters/StrDex/StrDex", "Metadata/Characters/StrInt/StrInt",
+                            "Metadata/Characters/DexInt/DexInt",
+                            "Metadata/Characters/StrDexInt/StrDexInt"
+        };
         public static void PhaseRun()
         {
             if (LokiPoe.Me.Auras.All(x => x.Name != "Phase Run"))
@@ -419,7 +434,7 @@ namespace FollowBot
         public string Name => "FollowBot";
         public string Author => "NotYourFriend, origial code from Unknown";
         public string Description => "Bot that follow leader.";
-        public string Version => "0.0.6.0";
+        public string Version => "0.0.6.3";
         public UserControl Control => _gui ?? (_gui = new FollowBotGui());
         public JsonSettings Settings => FollowBotSettings.Instance;
         public override string ToString() => $"{Name}: {Description}";

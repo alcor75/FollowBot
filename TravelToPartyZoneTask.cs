@@ -21,7 +21,7 @@ namespace FollowBot
         private bool _enabled = true;
         private Stopwatch _portalRequestStopwatch = Stopwatch.StartNew();
         private static int _zoneCheckRetry = 0;
-        private Stopwatch _portOutStopwatch = new Stopwatch();
+        public static Stopwatch PortOutStopwatch = new Stopwatch();
 
         public string Name { get { return "TravelToPartyZone"; } }
         public string Description { get { return "This task will travel to party grind zone."; } }
@@ -30,10 +30,11 @@ namespace FollowBot
         
         public void Start()
         {
-            _portOutStopwatch.Reset();
+            PortOutStopwatch.Reset();
         }
         public void Stop()
         {
+            PortOutStopwatch.Reset();
         }
         public void Tick()
         {
@@ -50,11 +51,21 @@ namespace FollowBot
             
             var leader = LokiPoe.InstanceInfo.PartyMembers.FirstOrDefault(x => x.MemberStatus == PartyStatus.PartyLeader);
             if (leader == null) return false;
-            var leadername = leader.PlayerEntry.Name;
+            var leaderPlayerEntry = leader.PlayerEntry;
+            if (leaderPlayerEntry == null) return false;
+            if (leaderPlayerEntry?.IsOnline != true)
+            {
+                GlobalLog.Warn($"Leader is not Online, probably loading.");
+                return false;
+            }
+
+            var leadername = leaderPlayerEntry?.Name;
+            var leaderArea = leaderPlayerEntry?.Area;
+            if (string.IsNullOrEmpty(leadername) || leaderArea == null) return false;
             if (LokiPoe.InGameState.PartyHud.IsInSameZone(leadername))
             {
                 _zoneCheckRetry = 0;
-                _portOutStopwatch.Reset();
+                PortOutStopwatch.Reset();
                 return false;
             }
             else
@@ -63,14 +74,20 @@ namespace FollowBot
                 //{
                 //    if (FollowBotSettings.Instance.DontPortOutofMap) return false;
                 //}
-
-                _zoneCheckRetry ++;
-                if (_zoneCheckRetry < 3)
+                if (PortOutStopwatch.IsRunning && PortOutStopwatch.ElapsedMilliseconds < (FollowBotSettings.Instance.PortOutThreshold * 1000))
                 {
-                    await Coroutines.LatencyWait();
-                    GlobalLog.Warn($"IsInSameZone returned false for {leadername} retry [{_zoneCheckRetry}/3]");
-                    return true;
+
                 }
+                else
+                {
+                    _zoneCheckRetry++;
+                    if (_zoneCheckRetry < 3)
+                    {
+                        await Coroutines.LatencyWait();
+                        GlobalLog.Warn($"IsInSameZone returned false for {leadername} retry [{_zoneCheckRetry}/3]");
+                        return true;
+                    }
+                }                
             }
             //First check the DontPortOutofMap
             var curZone = World.CurrentArea;
@@ -128,15 +145,15 @@ namespace FollowBot
                 return true;
             }
 
-            if (leader.PlayerEntry.Area.IsMap || leader.PlayerEntry.Area.IsTempleOfAtzoatl || leader.PlayerEntry.Area.Id.Contains("Expedition"))
-            {
+            if (leaderArea.IsMap || leaderArea.IsTempleOfAtzoatl || leaderArea.Id.Contains("Expedition"))
+            {                
                 if (!await TakePortal())
                     await Coroutines.ReactionWait();
                 return true;
             }
-            else if (leader.PlayerEntry.Area.IsLabyrinthArea)
+            else if (leaderArea.IsLabyrinthArea)
             {
-                if (leader.PlayerEntry.Area.Name == "Aspirants' Plaza")
+                if (leaderArea.Name == "Aspirants' Plaza")
                 {
                     await PartyHelper.FastGotoPartyZone(leader.PlayerEntry.Name);
                     return true;
@@ -205,28 +222,30 @@ namespace FollowBot
 
             if (curZone.IsCombatArea && FollowBotSettings.Instance.PortOutThreshold > 0)
             {
-                if (_portOutStopwatch.IsRunning && _portalRequestStopwatch.ElapsedMilliseconds >= (FollowBotSettings.Instance.PortOutThreshold * 1000))
-                {
-                    _portOutStopwatch.Reset();
-                    GlobalLog.Warn($"[TravelToPartyZoneTask] {FollowBotSettings.Instance.PortOutThreshold} seconds elapsed and Party leader is in still a diffrerent zone porting!.");
-                    await PartyHelper.FastGotoPartyZone(leadername);                    
-                    return true;
-                }
-                else if (!_portOutStopwatch.IsRunning)
+                if (!PortOutStopwatch.IsRunning)
                 {
                     GlobalLog.Warn($"[TravelToPartyZoneTask] Party leader is in a diffrerent zone waiting {FollowBotSettings.Instance.PortOutThreshold} seconds to see if it come back.");
-                    _portOutStopwatch.Start();
-                    return true;
-                }
-                else
-                {
+                    PortOutStopwatch.Restart();
                     await Coroutines.LatencyWait();
                     return true;
                 }
+                if (PortOutStopwatch.IsRunning && PortOutStopwatch.ElapsedMilliseconds >= (FollowBotSettings.Instance.PortOutThreshold * 1000))
+                {
+                    PortOutStopwatch.Reset();
+                    GlobalLog.Warn($"[TravelToPartyZoneTask] {FollowBotSettings.Instance.PortOutThreshold} seconds elapsed and Party leader is in still a diffrerent zone porting!.");
+                    await PartyHelper.FastGotoPartyZone(leadername);
+                    return true;
+                }
+
+                await Coroutines.LatencyWait();
+                return true;
             }
             else
+            {
                 await PartyHelper.FastGotoPartyZone(leadername);
-
+                await Coroutines.LatencyWait();
+            }
+            await Coroutines.LatencyWait();
             return true;
         }
 
@@ -259,7 +278,7 @@ namespace FollowBot
             if (message.Id == Events.Messages.AreaChanged)
             {
                 _zoneCheckRetry = 0;
-                _portOutStopwatch.Reset();
+                PortOutStopwatch.Reset();
                 return MessageResult.Processed;
             }
             if (message.Id == "Enable")

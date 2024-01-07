@@ -15,7 +15,7 @@ namespace FollowBot.SimpleEXtensions.Positions
         public static readonly WalkablePosition StashPosAct8 = StashPosAct3;
         public static readonly WalkablePosition StashPosAct9 = StashPosAct4;
         public static readonly WalkablePosition StashPosAct10 = new WalkablePosition("Stash", new Vector2i(525, 281));
-        public static readonly WalkablePosition StashPosAct11 = new WalkablePosition("Stash", new Vector2i(593, 657));
+        public static readonly WalkablePosition StashPosAct11 = new WalkablePosition("Stash", new Vector2i(826, 833));
 
         public static readonly WalkablePosition WaypointPosAct1 = new WalkablePosition("Waypoint", new Vector2i(256, 169));
         public static readonly WalkablePosition WaypointPosAct2 = new WalkablePosition("Waypoint", new Vector2i(188, 216));
@@ -27,7 +27,7 @@ namespace FollowBot.SimpleEXtensions.Positions
         public static readonly WalkablePosition WaypointPosAct8 = WaypointPosAct3;
         public static readonly WalkablePosition WaypointPosAct9 = WaypointPosAct4;
         public static readonly WalkablePosition WaypointPosAct10 = new WalkablePosition("Waypoint", new Vector2i(586, 313));
-        public static readonly WalkablePosition WaypointPosAct11 = new WalkablePosition("Waypoint", new Vector2i(591, 689));
+        public static readonly WalkablePosition WaypointPosAct11 = new WalkablePosition("Waypoint", new Vector2i(814, 816));
 
         public static readonly WalkablePosition CommonPortalSpotAct1 = new WalkablePosition("common portal spot", new Vector2i(200, 235));
         public static readonly WalkablePosition CommonPortalSpotAct2 = new WalkablePosition("common portal spot", new Vector2i(220, 268));

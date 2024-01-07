@@ -18,7 +18,7 @@ namespace FollowBot.SimpleEXtensions.Global
         private static bool IgnoreSyndicateArea = true;
         private static readonly TimeSpan Lifetime = TimeSpan.FromMinutes(15);
         private static readonly Interval ScanInterval = new Interval(200);
-        private static readonly Interval ItemScanInterval = new Interval(300);
+        private static readonly Interval ItemScanInterval = new Interval(500);
 
         private static readonly List<PickupEvalHolder> PickupEvaluators = new List<PickupEvalHolder>();
 
@@ -148,8 +148,8 @@ namespace FollowBot.SimpleEXtensions.Global
 
         public static void Tick()
         {
-            //if (!LokiPoe.IsInGame || LokiPoe.Me.IsDead || !World.CurrentArea.IsCombatArea)
-            //    return;
+            if (!LokiPoe.IsInGame || LokiPoe.Me.IsDead || !World.CurrentArea.IsCombatArea)
+                return;
 
             Current.OnTick();
         }
@@ -221,40 +221,60 @@ namespace FollowBot.SimpleEXtensions.Global
         }
 
         private void WorldItemScan()
-        {
-            var labels = GameController.Instance.Game.IngameState.IngameUi.ItemsOnGroundLabels.ToList();
-           
+        {            
+            var labels = GameController.Instance.Game.IngameState.IngameUi.ItemsOnGroundLabels;
+
             foreach (var obj in labels)
             {
-                if (obj?.ItemOnGround?.GetComponent<DreamPoeBot.Loki.Components.WorldItem>() == null) continue;
+                if (obj == null) continue;
+                
+                if (obj?.ItemOnGround == null) continue;
 
-                var worldItem = new WorldItem(new EntityWrapper(obj.ItemOnGround.Address));
-
-                if (!worldItem.IsValid)
-                    continue;
-
-                if (worldItem.HasAllocation && (worldItem.AllocatedToPlayer == null || worldItem.AllocatedToPlayer.Name != LokiPoe.Me.Name) && DateTime.Now < worldItem.PublicTime)
-                    continue;
-
-                var id = worldItem.Id;
-
+                var id = obj.ItemOnGround.Id;
                 if (_processedItems.Contains(id))
                     continue;
-                
+
+                var metadata = obj.ItemOnGround.Metadata;                                              
+
+                if (metadata != "Metadata/MiscellaneousObjects/WorldItem")
+                {
+                    _processedItems.Add(id);
+                    continue;
+                }
+
+                var address = obj.ItemOnGround.Address;
+                var worldItem = new WorldItem(new EntityWrapper(address));
+
+                if (worldItem == null)
+                {
+                    _processedItems.Add(id);
+                    continue;
+                }
+
+                if (IsPoeFiltered(worldItem))
+                {
+                    _processedItems.Add(id);
+                    continue;
+                }
+
+                if (worldItem.IsAllocatedToOther && DateTime.Now < worldItem.PublicTime)
+                    continue;
+
                 var item = worldItem.Item;
+                if (item == null)
+                    continue;
 
                 var pos = worldItem.WalkablePosition();
                 pos.Initialized = true; //disable walkable position searching for items
-                if (!IsPoeFiltered(worldItem)) 
-                    Items.Add(new CachedWorldItem(id, pos, item.Size, item.Rarity));
-
+                Items.Add(new CachedWorldItem(id, pos, item.Size, item.Rarity));
+                
                 _processedItems.Add(id);
             }
         }
 
         private static bool IsPoeFiltered(WorldItem item)
         {
-            return item.Components.RenderComponent.InteractCenterWorld == DreamPoeBot.Common.Vector3.Zero;
+            return item?.Components?.RenderComponent?.InteractCenterWorld == DreamPoeBot.Common.Vector3.Zero || string.IsNullOrEmpty(item?.AnimatedPropertiesMetadata);
         }
 
         public void RemoveItemFromCache(CachedWorldItem item)

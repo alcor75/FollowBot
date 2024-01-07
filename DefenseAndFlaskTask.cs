@@ -140,6 +140,11 @@ namespace FollowBot
             if (LokiPoe.CurrentWorldArea.Id == "HeistHub") return false;
             if (!LokiPoe.CurrentWorldArea.IsCombatArea) return false;
             
+            if(LokiPoe.Me.HasAura("Grace Period"))
+            {
+                //await PlayerAction.MoveAway(15, 20);
+            }
+
             var hpPct = LokiPoe.Me.HealthPercent;
             var esPct = LokiPoe.Me.EnergyShieldPercent;
             var manaPct = LokiPoe.Me.ManaPercent;

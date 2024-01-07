@@ -558,5 +558,23 @@ namespace FollowBot.SimpleEXtensions
             return true;
         }
 
+        public static async Task<bool> MoveAway(int min, int max)
+        {
+            WorldPosition pos = WorldPosition.FindPathablePositionAtDistance(min, max, 5);
+            if (pos == null)
+            {
+                pos = new WorldPosition(LokiPoe.Me.Position);
+            }
+
+            Vector2i newPosition = pos.AsVector;
+            newPosition += new Vector2i(LokiPoe.Random.Next(-2, 3), LokiPoe.Random.Next(-2, 3));
+            if (!Move.Towards(newPosition, "away"))
+            {
+                ErrorManager.ReportError();
+                return false;
+            }
+
+            return true;
+        }
     }
 }

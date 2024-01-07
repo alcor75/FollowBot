@@ -10,7 +10,7 @@ namespace FollowBot
 {
 	public class OpenWaypointTask : ITask
 	{
-		private static readonly Interval ScanInterval = new Interval(500);
+		private static readonly Interval ScanInterval = new Interval(1500);
 
 		private static bool _sceptreSpecial;
 		private static bool _enabled;
@@ -37,9 +37,17 @@ namespace FollowBot
 			{
 				if (wpPos.IsFar)
 				{
-					wpPos.Come();
-					return true;
+					GlobalLog.Warn($"Detected unopen waypoint, trying to walk there to open it.");
+					if (wpPos.Distance < 60)
+						await wpPos.ComeAtOnce(15);
+					else
+					{
+						wpPos.Come();
+						return true;
+					}
 				}
+				await Coroutines.FinishCurrentAction(true);
+				await Coroutines.LatencyWait();
 				if (!await PlayerAction.OpenWaypoint())
 				{
 					ErrorManager.ReportError();
