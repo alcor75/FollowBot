@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using DreamPoeBot.BotFramework;
 using DreamPoeBot.Common;
 using DreamPoeBot.Loki.Bot;
 using DreamPoeBot.Loki.Bot.Pathfinding;
@@ -7,6 +6,7 @@ using DreamPoeBot.Loki.Common;
 using DreamPoeBot.Loki.Game;
 using FollowBot.SimpleEXtensions;
 using log4net;
+using static DreamPoeBot.Loki.Game.LokiPoe;
 
 namespace FollowBot
 {
@@ -40,39 +40,51 @@ namespace FollowBot
             if (!FollowBotSettings.Instance.ShouldFollow) return false;
             if (!LokiPoe.IsInGame || LokiPoe.Me.IsDead || LokiPoe.Me.IsInTown || LokiPoe.Me.IsInHideout)
             {
+                ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
                 return false;
             }
+            
+            var leader = FollowBot.Leader;
 
-            if (FollowBot.Leader == null)
+            if (leader == null)
             {
+                ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
                 return false;
             }
 
-            var distance = FollowBot.Leader.Position.Distance(LokiPoe.Me.Position);
+            var leaderPos = leader.Position;
+            var mypos = LokiPoe.Me.Position;
+            if (leaderPos == Vector2i.Zero || mypos == Vector2i.Zero)
+            {
+                ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
+                return false;
+            }
+
+            var distance = leaderPos.Distance(mypos);
 
             if (distance > FollowBotSettings.Instance.MaxCombatDistance)
             {
-                var pos = ExilePather.FastWalkablePositionFor(LokiPoe.Me.Position.GetPointAtDistanceBeforeEnd(
-                    FollowBot.Leader.Position,
+                var pos = ExilePather.FastWalkablePositionFor(mypos.GetPointAtDistanceBeforeEnd(
+                    leaderPos,
                     LokiPoe.Random.Next(FollowBotSettings.Instance.FollowDistance,
                         FollowBotSettings.Instance.MaxFollowDistance)));
-                if (pos == Vector2i.Zero || !ExilePather.PathExistsBetween(LokiPoe.Me.Position, pos))
+                if (pos == Vector2i.Zero || !ExilePather.PathExistsBetween(mypos, pos))
                 {
-
+                    ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
                     return false;
                 }
 
                 // Cast Phase run if we have it.
                 FollowBot.PhaseRun();
 
-                if (ExilePather.PathDistance(LokiPoe.Me.Position, pos) < 50)
-                    LokiPoe.InGameState.SkillBarHud.UseAt(FollowBot.LastBoundMoveSkillSlot, false,
-                        pos);
+                if (ExilePather.PathDistance(mypos, pos) < 45)
+                    LokiPoe.InGameState.SkillBarHud.UseAt(FollowBot.LastBoundMoveSkillSlot, false, pos, false);
                 else
                     Move.Towards(pos, $"{FollowBot.Leader.Name}");
                 return true;
             }
-            KeyManager.ClearAllKeyStates();
+            ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
+            ////KeyManager.ClearAllKeyStates();
             return false;
         }
 

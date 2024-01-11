@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media.Animation;
 using DreamPoeBot.BotFramework;
 using DreamPoeBot.Common;
 using DreamPoeBot.Loki.Bot;
@@ -10,6 +9,7 @@ using DreamPoeBot.Loki.Game;
 using DreamPoeBot.Loki.Game.Objects;
 using FollowBot.SimpleEXtensions;
 using log4net;
+using static DreamPoeBot.Loki.Game.LokiPoe;
 
 
 namespace FollowBot
@@ -41,31 +41,48 @@ namespace FollowBot
 
         public async Task<bool> Run()
         {
-            if (!FollowBotSettings.Instance.ShouldFollow) return false;
+            if (!FollowBotSettings.Instance.ShouldFollow)
+            {
+                ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
+                return false;
+            }
             if (!LokiPoe.IsInGame || LokiPoe.Me.IsDead || LokiPoe.Me.IsInTown || LokiPoe.Me.IsInHideout)
             {
+                ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
                 return false;
             }
             
             if (FollowBot.Leader == null)
             {
+                ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
                 return false;
             }
 
             var leader = FollowBot.Leader;
 
-            var distance = leader.Position.Distance(LokiPoe.Me.Position);
-            if (ExilePather.PathExistsBetween(LokiPoe.Me.Position, ExilePather.FastWalkablePositionFor(leader.Position)))
-                _lastSeenMasterPosition = leader.Position;
+            var leaderPos = leader.Position;
+            var mypos = LokiPoe.Me.Position;
+            if (leaderPos == Vector2i.Zero || mypos == Vector2i.Zero)
+            {
+                ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
+                return false;
+            }
+
+            var distance = leaderPos.Distance(mypos);
+
+            if (ExilePather.PathExistsBetween(mypos, ExilePather.FastWalkablePositionFor(leaderPos)))
+                _lastSeenMasterPosition = leaderPos;
 
             if (distance > FollowBotSettings.Instance.MaxFollowDistance || (leader?.HasCurrentAction == true && leader?.CurrentAction?.Skill?.InternalId == "Move")  )
             {
-                var pos = ExilePather.FastWalkablePositionFor(LokiPoe.Me.Position.GetPointAtDistanceBeforeEnd(
-                    leader.Position,
+                var pos = ExilePather.FastWalkablePositionFor(mypos.GetPointAtDistanceBeforeEnd(
+                    leaderPos,
                     LokiPoe.Random.Next(FollowBotSettings.Instance.FollowDistance,
                         FollowBotSettings.Instance.MaxFollowDistance)));
-                if (pos == Vector2i.Zero || !ExilePather.PathExistsBetween(LokiPoe.Me.Position, pos))
+                if (pos == Vector2i.Zero || !ExilePather.PathExistsBetween(mypos, pos))
                 {
+                    KeyManager.ClearAllKeyStates();
+
                     //First check for Delve portals:
                     var delveportal = LokiPoe.ObjectManager.GetObjectsByType<AreaTransition>().FirstOrDefault(x => x.Name == "Azurite Mine" && x.Metadata == "Metadata/MiscellaneousObject/PortalTransition");
                     if (delveportal != null)
@@ -95,9 +112,10 @@ namespace FollowBot
                         FollowBot.Leader = null;
                         return true;
                     }
+
                     AreaTransition areatransition = null;
                     if (_lastSeenMasterPosition != Vector2i.Zero)
-                        areatransition = LokiPoe.ObjectManager.GetObjectsByType<AreaTransition>().OrderBy(x => x.Position.Distance(_lastSeenMasterPosition)).FirstOrDefault(x => ExilePather.PathExistsBetween(LokiPoe.Me.Position, ExilePather.FastWalkablePositionFor(x.Position, 20)));
+                        areatransition = LokiPoe.ObjectManager.GetObjectsByType<AreaTransition>().OrderBy(x => x.Position.Distance(_lastSeenMasterPosition)).FirstOrDefault(x => ExilePather.PathExistsBetween(mypos, ExilePather.FastWalkablePositionFor(x.Position, 20)));
                     if (areatransition == null)
                     {
                         var teleport = LokiPoe.ObjectManager.GetObjectsByName("Portal").OrderBy(x => x.Position.Distance(_lastSeenMasterPosition)).FirstOrDefault(x => ExilePather.PathExistsBetween(LokiPoe.Me.Position, ExilePather.FastWalkablePositionFor(x.Position, 20)));
@@ -147,23 +165,24 @@ namespace FollowBot
                         Log.DebugFormat("[{0}] Areatransition error.", Name);
                     }
 
-
-                    FollowBot.Leader = null;
+                    //FollowBot.Leader = null;
                     return true;
                 }
 
                 // Cast Phase run if we have it.
                 FollowBot.PhaseRun();
 
-                if (ExilePather.PathDistance(LokiPoe.Me.Position, pos) < 50)
+                if (ExilePather.PathDistance(mypos, pos) < 45)
                 {
-                    LokiPoe.InGameState.SkillBarHud.UseAt(FollowBot.LastBoundMoveSkillSlot, false, pos);
+                    LokiPoe.InGameState.SkillBarHud.UseAt(FollowBot.LastBoundMoveSkillSlot, false, pos, false);
                 }
                 else
                     Move.Towards(pos, $"{leader.Name}");
                 return true;
             }
-            KeyManager.ClearAllKeyStates();
+            // Clear the move key
+            ProcessHookManager.SetKeyState(FollowBot.LastBoundMoveSkillKey, 0);
+            //KeyManager.ClearAllKeyStates();
             return false;
         }
 

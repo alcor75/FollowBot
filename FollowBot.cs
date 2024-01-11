@@ -18,6 +18,7 @@ using log4net;
 
 using Message = DreamPoeBot.Loki.Bot.Message;
 using UserControl = System.Windows.Controls.UserControl;
+using System.Windows.Forms;
 
 namespace FollowBot
 {
@@ -43,6 +44,16 @@ namespace FollowBot
                 if (_lastBoundMoveSkillSlot == -1)
                     _lastBoundMoveSkillSlot = LokiPoe.InGameState.SkillBarHud.LastBoundMoveSkill.Slot;
                 return _lastBoundMoveSkillSlot;
+            }
+        }
+        private static Keys _lastBoundMoveSkillKey = Keys.Clear;
+        internal static Keys LastBoundMoveSkillKey
+        {
+            get
+            {
+                if (_lastBoundMoveSkillKey == Keys.Clear)
+                    _lastBoundMoveSkillKey = LokiPoe.InGameState.SkillBarHud.LastBoundMoveSkill.BoundKeys.Last();
+                return _lastBoundMoveSkillKey;
             }
         }
 
@@ -109,6 +120,9 @@ namespace FollowBot
 
         public void Start()
         {
+            _lastBoundMoveSkillSlot = -1;
+            _lastBoundMoveSkillKey = Keys.Clear;
+
             ItemEvaluator.Instance = DefaultItemEvaluator.Instance;
             Explorer.CurrentDelegate = user => CombatAreaCache.Current.Explorer.BasicExplorer;
 
@@ -434,7 +448,7 @@ namespace FollowBot
         public string Name => "FollowBot";
         public string Author => "NotYourFriend, origial code from Unknown";
         public string Description => "Bot that follow leader.";
-        public string Version => "0.0.6.3";
+        public string Version => "0.0.6.5";
         public UserControl Control => _gui ?? (_gui = new FollowBotGui());
         public JsonSettings Settings => FollowBotSettings.Instance;
         public override string ToString() => $"{Name}: {Description}";
